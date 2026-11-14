@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dicky's Car Sales | Interactive Showroom & Pre-Owned Vehicles in Malalane</title>
+    <meta name="description" content="Dicky's Car Sales at Stand 56, N4, Malalane. Scroll through our interactive automotive studio, browse roadworthy-certified bakkies, SUVs, and hatchbacks, and chat directly on WhatsApp.">
+
+    <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            950: '#050914',
+                            900: '#0B1120',
+                            850: '#111C33',
+                            800: '#1E293B',
+                            700: '#334155',
+                        },
+                        brand: {
+                            300: '#7DD3FC',
+                            400: '#38BDF8',
+                            500: '#2563EB',
+                            600: '#1D4ED8',
+                        },
+                        whatsapp: {
+                            500: '#25D366',
+                            600: '#1EBE5D',
+                            700: '#128C7E',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        /* Custom Range Sliders (Touch-Optimized) */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: #1E293B;
+            height: 0.5rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -7px;
+            background-color: #38BDF8;
+            height: 1.35rem;
+            width: 1.35rem;
+            border-radius: 9999px;
+            border: 3px solid #0B1120;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+            transition: transform 0.15s ease, background-color 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background-color: #2563EB;
+            transform: scale(1.12);
+        }
+
+        /* Hidden scrollbar utility for mobile horizontal pills */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Smooth custom dark scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050914;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E293B;
+            border-radius: 9999px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Floating WhatsApp Pulse */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            70% { transform: scale(1.35); opacity: 0; }
+            100% { transform: scale(1.35); opacity: 0; }
+        }
+        .wa-pulse::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background-color: #25D366;
+            z-index: -1;
+            animation: pulse-ring 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+        }
+
+        /* 3D Scroll Studio Stage & Perspective Camera Rig */
+        .studio-perspective {
+            perspective: 1200px;
+            transform-style: preserve-3d;
+            height: 100vh;
+            height: 100dvh;
+        }
+        #studio-3d-frame {
+            transform-style: preserve-3d;
+            will-change: transform;
+            transform-origin: 50% 54%;
+        }
+
+        /* Real-Life Studio Vehicle Stage Cards on Dark Obsidian Floor */
+        .studio-real-car {
+            position: absolute;
+            transform: translate3d(-50%, -50%, 0);
+            will-change: transform, opacity;
+            transition: box-shadow 0.25s ease;
+            user-select: none;
+        }
+        .studio-car-card {
+            position: relative;
+            border-radius: 0.9rem;
+            overflow: hidden;
+            background: #070D19;
+            border: 1.5px solid rgba(56, 189, 248, 0.38);
+            box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.85), 0 0 24px -4px rgba(37, 99, 235, 0.32);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        @media (min-width: 640px) {
+            .studio-car-card {
+                border-radius: 1.15rem;
+                box-shadow: 0 28px 60px -10px rgba(0, 0, 0, 0.85), 0 0 28px -4px rgba(37, 99, 235, 0.32);
+            }
+        }
+        .studio-real-car:hover .studio-car-card {
+            border-color: #38BDF8;
+            box-shadow: 0 32px 70px -10px rgba(37, 99, 235, 0.65), 0 0 0 2px #38BDF8;
+        }
+
+        /* Mobile portrait studio card positioning so all 4 cars fit cleanly in a 2x2 formation */
+        @media (max-width: 639px) {
+            #real-car-ecosport {
+                left: 27% !important;
+                top: 28% !important;
+                width: 43vw !important;
+                max-width: 168px !important;
+            }
+            #real-car-hilux {
+                left: 73% !important;
+                top: 28% !important;
+                width: 43vw !important;
+                max-width: 168px !important;
+            }
+            #real-car-ranger {
+                left: 26% !important;
+                top: 47% !important;
+                width: 45vw !important;
+                max-width: 178px !important;
+            }
+            #real-car-polo {
+                left: 74% !important;
+                top: 47% !important;
+                width: 45vw !important;
+                max-width: 178px !important;
+            }
+        }
+
+        /* Specular Dark Obsidian Floor Reflection under each Real Car */
+        .studio-car-reflection {
+            margin-top: 6px;
+            height: 50px;
+            border-radius: 1rem;
+            overflow: hidden;
+            transform: scaleY(-1);
+            opacity: 0.28;
+            filter: blur(2.5px) brightness(0.85);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0));
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0));
+            pointer-events: none;
+        }
+
+        /* Synchronized Story HUD Cards */
+        .hud-stage-card {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate3d(0, 24px, 0) scale(0.96);
+            transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: opacity, transform;
+        }
+        .hud-stage-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate3d(0, 0, 0) scale(1);
+        }
+        #hud-stage-3.hud-stage-card {
+            transform: translate3d(-50%, 24px, 0) scale(0.96);
+        }
+        #hud-stage-3.hud-stage-card.active {
+            transform: translate3d(-50%, 0, 0) scale(1);
+        }
+
+        /* Camera Viewfinder Corner Brackets */
+        .viewfinder-bracket {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-color: rgba(56, 189, 248, 0.35);
+            pointer-events: none;
+            z-index: 25;
+            transition: transform 0.15s ease, border-color 0.2s ease;
+        }
+        .vf-tl { top: 24px; left: 20px; border-top: 2px solid; border-left: 2px solid; }
+        .vf-tr { top: 24px; right: 20px; border-top: 2px solid; border-right: 2px solid; }
+        .vf-bl { bottom: 20px; left: 20px; border-bottom: 2px solid; border-left: 2px solid; }
+        .vf-br { bottom: 20px; right: 20px; border-bottom: 2px solid; border-right: 2px solid; }
+
+        /* Pulse Ring for Studio Hotspots */
+        @keyframes hotspot-ping {
+            0% { transform: scale(1); opacity: 0.85; }
+            75%, 100% { transform: scale(2.3); opacity: 0; }
+        }
+        .hotspot-dot::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            border: 2px solid #38BDF8;
+            animation: hotspot-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        /* Category Filter Gliding Pill */
+        #category-slider-pill {
+            transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1), height 0.32s ease;
+        }
+
+        /* Mobile Drawer & Modals */
+        .slide-drawer {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transform: translateY(-8px);
+            transition: max-height 0.35s ease, opacity 0.25s ease, transform 0.35s ease;
+        }
+        .slide-drawer.open {
+            max-height: 440px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .modal-backdrop {
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .modal-backdrop.open {
+            opacity: 1;
+        }
+        .modal-card {
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .modal-backdrop.open .modal-card {
+            transform: translateY(0) scale(1);
+        }
+        .wa-widget-panel {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(14px) scale(0.95);
+            transition: opacity 0.25s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .wa-widget-panel.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+    </style>
+</head>
+<body class="bg-navy-950 text-slate-100 antialiased selection:bg-blue-600 selection:text-white overflow-x-hidden">
+
+    <!-- Top Utility Bar -->
+    <div class="bg-[#03060D] text-slate-300 text-[11px] sm:text-xs border-b border-slate-800/80 relative z-50">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex flex-wrap items-center gap-3 sm:gap-6">
+                <a href="https://maps.app.goo.gl/1Dm6KEhdu3omDBu66" target="_blank" rel="noopener noreferrer" class="hover:text-sky-400 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-location-dot text-sky-400"></i>
+                    <span class="truncate max-w-[200px] sm:max-w-none">Stand 56, of farm 239ju, N4, Malalane, 1320</span>
+                </a>
+                <span class="hidden md:inline-flex items-center gap-1.5 text-slate-400">
+                    <i class="fa-regular fa-clock text-sky-400"></i>
+                    <span>Mon–Fri: 9am–5pm | Sat: 9am–12pm | Sun: Closed</span>
+                </span>
+            </div>
+            <div class="flex items-center gap-3 sm:gap-4 ml-auto">
+                <a href="tel:0662360624" class="hover:text-white transition font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-phone text-sky-400"></i>
+                    <span>066 236 0624</span>
+                </a>
+                <span class="text-slate-700">|</span>
+                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20am%20visiting%20your%20website%20and%20would%20like%20to%20enquire%20about%20your%20vehicles." target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1.5">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span class="hidden xs:inline">WhatsApp Dealer</span>
+                    <span class="xs:hidden">Chat</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Main Header -->
+    <header class="sticky top-0 z-40 bg-navy-900/95 backdrop-blur-md border-b border-slate-800/90 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 sm:h-20">
+                <!-- Brand Logo -->
+                <a href="#" class="flex items-center gap-2.5 sm:gap-3 group">
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-blue-600/20 border border-sky-400/30 flex items-center justify-center text-sky-400 shadow-md group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fa-solid fa-car-side text-base sm:text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="font-display font-extrabold text-base sm:text-xl tracking-tight text-white block leading-none">
+                            DICKY'S <span class="text-sky-400">CAR SALES</span>
+                        </span>
+                        <span class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-slate-400 block mt-0.5 sm:mt-1">
+                            Malalane • N4 Showroom
+                        </span>
+                    </div>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <nav class="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-300">
+                    <a href="#scrollStudioSection" class="hover:text-sky-400 transition">Interactive Studio</a>
+                    <a href="#inventory" class="hover:text-sky-400 transition">Showroom Stock</a>
+                    <a href="#finance" class="hover:text-sky-400 transition">Finance Calculator</a>
+                    <a href="#trade-in" class="hover:text-sky-400 transition">Sell / Trade-In</a>
+                    <a href="#contact" class="hover:text-sky-400 transition">Location & Hours</a>
+                </nav>
+
+                <!-- Primary CTA Button -->
+                <div class="hidden md:flex items-center gap-3">
+                    <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20would%20like%20to%20chat%20with%20a%20sales%20executive."
+                       target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Talk to Dealer</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Quick WhatsApp + Hamburger Button -->
+                <div class="flex md:hidden items-center gap-2">
+                    <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!" target="_blank" rel="noopener noreferrer"
+                       aria-label="WhatsApp Dealer"
+                       class="w-9 h-9 rounded-xl bg-whatsapp-500 text-white flex items-center justify-center shadow">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                    </a>
+                    <button type="button" id="mobile-menu-btn" aria-label="Toggle Menu" class="p-2 rounded-xl text-slate-200 hover:bg-slate-800 focus:outline-none">
+                        <i id="mobile-menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu" class="slide-drawer md:hidden bg-navy-900 border-b border-slate-800 px-4">
+            <div class="py-4 space-y-2">
+                <a href="#scrollStudioSection" class="mobile-nav-link block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800">Interactive Studio</a>
+                <a href="#inventory" class="mobile-nav-link block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800">Showroom Stock</a>
+                <a href="#finance" class="mobile-nav-link block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800">Finance Calculator</a>
+                <a href="#trade-in" class="mobile-nav-link block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800">Sell / Trade-In</a>
+                <a href="#contact" class="mobile-nav-link block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-200 hover:bg-slate-800">Location & Hours</a>
+                <div class="pt-2 grid grid-cols-2 gap-3">
+                    <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20am%20visiting%20your%20website%20and%20have%20an%20enquiry."
+                       target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center justify-center gap-2 bg-whatsapp-500 text-white font-semibold text-sm py-3 rounded-xl shadow">
+                        <i class="fa-brands fa-whatsapp text-base"></i>
+                        <span>WhatsApp</span>
+                    </a>
+                    <a href="tel:0662360624" class="inline-flex items-center justify-center gap-2 bg-slate-800 border border-slate-700 text-white font-semibold text-sm py-3 rounded-xl shadow">
+                        <i class="fa-solid fa-phone text-xs text-sky-400"></i>
+                        <span>Call Dealer</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- INTERACTIVE SCROLL-DRIVEN DARK MIDNIGHT SHOWROOM STAGE (420vh Sticky Container) -->
+    <section id="scrollStudioSection" class="relative h-[380vh] sm:h-[420vh] bg-[#040812] select-none">
+        <div class="sticky top-0 w-full overflow-hidden bg-[#050914] studio-perspective">
+
+            <!-- Viewfinder Brackets -->
+            <div id="vf-tl" class="viewfinder-bracket vf-tl hidden sm:block"></div>
+            <div id="vf-tr" class="viewfinder-bracket vf-tr hidden sm:block"></div>
+            <div id="vf-bl" class="viewfinder-bracket vf-bl hidden sm:block"></div>
+            <div id="vf-br" class="viewfinder-bracket vf-br hidden sm:block"></div>
+
+            <!-- Dynamic Camera Rig Frame (Smooth Stabilized 3D Dolly Zoom & Pitch/Yaw Parallax) -->
+            <div id="studio-3d-frame" class="relative w-full h-full flex items-center justify-center">
+
+                <!-- 1. Dark Midnight Carbon & Cobalt Showroom Floor & Architectural Lighting Canvas -->
+                <canvas id="studioEnvCanvas" class="w-full h-full block object-cover pointer-events-none"></canvas>
+
+                <!-- 2. Real-Life Photographic Vehicles Stage (4 Actual Real-Life Models Choreographed with Scroll) -->
+                <div id="photo-studio-stage" class="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+
+                    <!-- Studio Backdrop Title (Reveals at 50% - 100% Scroll) -->
+                    <div id="studio-backdrop-title" class="absolute left-1/2 top-[10%] sm:top-[15%] -translate-x-1/2 text-center pointer-events-none opacity-0 transition-opacity duration-150 w-full px-4">
+                        <div class="font-display font-extrabold text-xl sm:text-5xl lg:text-6xl tracking-[0.18em] sm:tracking-[0.22em] text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-sky-400/80 drop-shadow-[0_4px_24px_rgba(56,189,248,0.35)] uppercase">
+                            PREMIUM SELECTION
+                        </div>
+                        <div class="font-sans font-bold text-[9px] sm:text-xs tracking-[0.28em] sm:tracking-[0.35em] text-sky-400 uppercase mt-1">
+                            DICKY'S CAR SALES • ELITE SHOWROOM MALALANE
+                        </div>
+                    </div>
+
+                    <!-- BACK-LEFT VEHICLE (Car #3): 2021 Ford EcoSport 1.0 EcoBoost Titanium -->
+                    <div id="real-car-ecosport" data-car-id="3"
+                         class="studio-real-car sm:w-[250px] lg:w-[300px] pointer-events-auto cursor-pointer group"
+                         style="left: 36%; top: 46%; z-index: 12; opacity: 0;">
+                        <div class="studio-car-card">
+                            <div class="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=900&q=85"
+                                     alt="2021 Ford EcoSport 1.0 EcoBoost Titanium"
+                                     class="studio-fallback-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/15 to-transparent"></div>
+                                <div class="absolute top-2 left-2 flex items-center gap-1">
+                                    <span class="px-1.5 sm:px-2 py-0.5 rounded bg-navy-900/90 text-sky-400 text-[9px] sm:text-[10px] font-bold border border-white/15">2021</span>
+                                    <span class="px-1.5 sm:px-2 py-0.5 rounded bg-blue-600 text-white text-[9px] sm:text-[10px] font-bold">SUV</span>
+                                </div>
+                                <span class="hotspot-dot absolute top-2 right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-sky-400"></span>
+                                <div class="absolute bottom-2 inset-x-2.5 flex items-end justify-between gap-1">
+                                    <div class="min-w-0">
+                                        <span class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-300 truncate">Ford</span>
+                                        <span class="block font-display font-extrabold text-[11px] sm:text-sm text-white leading-tight truncate">EcoSport 1.0T</span>
+                                    </div>
+                                    <span class="font-display font-extrabold text-[11px] sm:text-sm text-emerald-400 shrink-0">R 249,900</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="studio-car-reflection hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=500&q=60"
+                                 alt="" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <!-- BACK-RIGHT VEHICLE (Car #4): 2023 Toyota Hilux 2.8 GD-6 Raider 4x4 + Canopy -->
+                    <div id="real-car-hilux" data-car-id="4"
+                         class="studio-real-car sm:w-[265px] lg:w-[320px] pointer-events-auto cursor-pointer group"
+                         style="left: 64%; top: 46%; z-index: 13; opacity: 0;">
+                        <div class="studio-car-card">
+                            <div class="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=900&q=85"
+                                     alt="2023 Toyota Hilux 2.8 GD-6 Raider 4x4"
+                                     class="studio-fallback-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/15 to-transparent"></div>
+                                <div class="absolute top-2 left-2 flex items-center gap-1">
+                                    <span class="px-1.5 sm:px-2 py-0.5 rounded bg-navy-900/90 text-sky-400 text-[9px] sm:text-[10px] font-bold border border-white/15">2023</span>
+                                    <span class="px-1.5 sm:px-2 py-0.5 rounded bg-blue-600 text-white text-[9px] sm:text-[10px] font-bold">4x4</span>
+                                </div>
+                                <span class="hotspot-dot absolute top-2 right-2 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-sky-400"></span>
+                                <div class="absolute bottom-2 inset-x-2.5 flex items-end justify-between gap-1">
+                                    <div class="min-w-0">
+                                        <span class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-300 truncate">Toyota</span>
+                                        <span class="block font-display font-extrabold text-[11px] sm:text-sm text-white leading-tight truncate">Hilux 2.8 Raider</span>
+                                    </div>
+                                    <span class="font-display font-extrabold text-[11px] sm:text-sm text-emerald-400 shrink-0">R 619,900</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="studio-car-reflection hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=500&q=60"
+                                 alt="" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <!-- FRONT-LEFT VEHICLE (Car #1): 2022 Ford Ranger 2.0 Bi-Turbo Wildtrak 4x4 -->
+                    <div id="real-car-ranger" data-car-id="1"
+                         class="studio-real-car sm:w-[310px] lg:w-[380px] pointer-events-auto cursor-pointer group"
+                         style="left: 23%; top: 60%; z-index: 20;">
+                        <div class="studio-car-card">
+                            <div class="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=85"
+                                     alt="2022 Ford Ranger 2.0 Bi-Turbo Wildtrak 4x4"
+                                     class="studio-fallback-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/15 to-transparent"></div>
+                                <div class="absolute top-2 sm:top-3 left-2 sm:left-3 flex items-center gap-1">
+                                    <span class="px-1.5 sm:px-2.5 py-0.5 rounded bg-navy-900/90 text-sky-400 text-[9px] sm:text-[11px] font-bold border border-white/15">2022</span>
+                                    <span class="px-1.5 sm:px-2.5 py-0.5 rounded bg-blue-600 text-white text-[9px] sm:text-[11px] font-bold">Wildtrak 4x4</span>
+                                </div>
+                                <span class="hotspot-dot absolute top-2 sm:top-3 right-2 sm:right-3 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-sky-400"></span>
+                                <div class="absolute bottom-2 sm:bottom-3 inset-x-2.5 sm:inset-x-3.5 flex items-end justify-between gap-1">
+                                    <div class="min-w-0">
+                                        <span class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-300 truncate">Ford Showcase</span>
+                                        <span class="block font-display font-extrabold text-xs sm:text-base text-white leading-tight truncate">Ranger Wildtrak</span>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <span class="block font-display font-extrabold text-xs sm:text-base text-emerald-400">R 549,900</span>
+                                        <span class="hidden sm:block text-[10px] text-slate-300">Tap for Specs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="studio-car-reflection hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=60"
+                                 alt="" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                    <!-- FRONT-RIGHT VEHICLE (Car #2): 2021 Volkswagen Polo GTI 2.0 TSI DSG -->
+                    <div id="real-car-polo" data-car-id="2"
+                         class="studio-real-car sm:w-[295px] lg:w-[360px] pointer-events-auto cursor-pointer group"
+                         style="left: 77%; top: 61%; z-index: 21; opacity: 0;">
+                        <div class="studio-car-card">
+                            <div class="relative aspect-[16/10] bg-slate-900 overflow-hidden">
+                                <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=85"
+                                     alt="2021 Volkswagen Polo GTI 2.0 TSI DSG"
+                                     class="studio-fallback-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                <div class="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/15 to-transparent"></div>
+                                <div class="absolute top-2 sm:top-3 left-2 sm:left-3 flex items-center gap-1">
+                                    <span class="px-1.5 sm:px-2.5 py-0.5 rounded bg-navy-900/90 text-sky-400 text-[9px] sm:text-[11px] font-bold border border-white/15">2021</span>
+                                    <span class="px-1.5 sm:px-2.5 py-0.5 rounded bg-blue-600 text-white text-[9px] sm:text-[11px] font-bold">GTI DSG</span>
+                                </div>
+                                <span class="hotspot-dot absolute top-2 sm:top-3 right-2 sm:right-3 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-sky-400"></span>
+                                <div class="absolute bottom-2 sm:bottom-3 inset-x-2.5 sm:inset-x-3.5 flex items-end justify-between gap-1">
+                                    <div class="min-w-0">
+                                        <span class="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-300 truncate">Volkswagen</span>
+                                        <span class="block font-display font-extrabold text-xs sm:text-base text-white leading-tight truncate">Polo GTI 2.0 TSI</span>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <span class="block font-display font-extrabold text-xs sm:text-base text-emerald-400">R 389,900</span>
+                                        <span class="hidden sm:block text-[10px] text-slate-300">Tap for Specs</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="studio-car-reflection hidden sm:block">
+                            <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=60"
+                                 alt="" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 3. Native Scroll-Scrubbed Video Layer (Activates automatically if gemini_generated_video_6e167ed8.mp4 is present or loaded) -->
+                <video id="scrollVideo"
+                       muted
+                       playsinline
+                       preload="auto"
+                       class="hidden absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-15">
+                    <source src="gemini_generated_video_6e167ed8.mp4" type="video/mp4">
+                    <source src="video_1.mp4" type="video/mp4">
+                </video>
+
+                <!-- 4. Foreground Kinetic FX Canvas (Subtle 3D Bokeh Dust) -->
+                <canvas id="fxCanvas" class="absolute inset-0 w-full h-full block pointer-events-none z-20"></canvas>
+
+            </div>
+
+            <!-- Synchronized Story Overlay Layer -->
+            <div class="absolute inset-0 z-30 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pointer-events-none">
+
+                <!-- Top Camera Telemetry Bar & Controls (Hidden from visible front-end as requested while preserving full DOM functionality) -->
+                <div class="hidden" aria-hidden="true">
+                    <div>
+                        <strong id="hud-progress">0%</strong>
+                        <strong id="hud-velocity">0 km/h</strong>
+                        <strong id="hud-focal">35mm</strong>
+                        <strong id="hud-gforce">1.00G</strong>
+                    </div>
+                    <button type="button" id="shake-toggle-btn">
+                        <span id="shake-mode-label">Camera Shake: OFF</span>
+                    </button>
+                    <label id="video-upload-pill">
+                        <span id="video-pill-label">Load Studio Video (.mp4)</span>
+                        <input type="file" id="manual-video-input" accept="video/mp4,video/*" class="hidden">
+                    </label>
+                    <div id="impact-beat-banner">
+                        <span id="impact-beat-text">STAGE LOCK</span>
+                    </div>
+                </div>
+
+                <!-- Clean Minimal Scroll Progress Bar & Mobile Stage Switcher at Top -->
+                <div class="pt-3 sm:pt-4 flex items-center justify-between gap-3 pointer-events-auto">
+                    <div class="flex items-center gap-1.5 bg-navy-900/85 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/10 shadow-lg">
+                        <button type="button" data-scroll-target="0.04" class="stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-sky-400 bg-blue-600/20 transition">01</button>
+                        <button type="button" data-scroll-target="0.34" class="stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-slate-400 hover:text-white transition">02</button>
+                        <button type="button" data-scroll-target="0.58" class="stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-slate-400 hover:text-white transition">03</button>
+                        <button type="button" data-scroll-target="0.88" class="stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-slate-400 hover:text-white transition">04</button>
+                    </div>
+
+                    <div class="flex-1 bg-navy-900/50 h-1.5 rounded-full overflow-hidden backdrop-blur-xs border border-white/5">
+                        <div id="scroll-progress-bar" class="bg-gradient-to-r from-blue-600 via-sky-400 to-emerald-400 h-full w-0 transition-all duration-75"></div>
+                    </div>
+
+                    <a href="#inventory" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-navy-900/90 hover:bg-navy-800 text-white border border-white/15 text-[11px] font-bold shadow-lg transition shrink-0">
+                        <span>All 8 Cars</span>
+                        <i class="fa-solid fa-arrow-down text-sky-400"></i>
+                    </a>
+                </div>
+
+                <!-- STAGE 01 (0% - 22%): Ford Ranger Wildtrak Lead Showcase -->
+                <div id="hud-stage-0" class="hud-stage-card active bottom-4 sm:bottom-10 inset-x-3 sm:inset-x-auto sm:left-8 sm:max-w-xl bg-navy-900/92 backdrop-blur-xl text-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl">
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-blue-600/25 border border-sky-400/30 text-sky-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1.5 sm:mb-2">
+                        <span>01 • Stand 56, N4, Malalane</span>
+                    </div>
+                    <h1 class="font-display font-extrabold text-xl sm:text-3xl lg:text-4xl tracking-tight leading-[1.15] mb-1.5 sm:mb-2">
+                        Drive the Lowveld with <span class="text-sky-400">Confidence & Value.</span>
+                    </h1>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                        Scroll down to experience our interactive showroom as our <strong>Ford Ranger Wildtrak</strong>, <strong>VW Polo GTI</strong>, <strong>Ford EcoSport</strong>, and <strong>Toyota Hilux</strong> roll onto the studio floor.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <a href="#inventory" class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 sm:px-4 rounded-xl shadow-lg transition">
+                            <i class="fa-solid fa-car"></i>
+                            <span>Browse Showroom Stock</span>
+                        </a>
+                        <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20am%20browsing%20your%20website%20and%20would%20like%20to%20speak%20with%20a%20dealer."
+                           target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center justify-center gap-2 bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs sm:text-sm px-3.5 py-2.5 sm:px-4 rounded-xl shadow-lg transition">
+                            <i class="fa-brands fa-whatsapp text-base"></i>
+                            <span>WhatsApp Dealer</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- STAGE 02 (23% - 48%): VW Polo GTI & Ford EcoSport Enter -->
+                <div id="hud-stage-1" class="hud-stage-card bottom-4 sm:bottom-10 inset-x-3 sm:inset-x-auto sm:right-10 sm:max-w-md bg-navy-900/92 backdrop-blur-xl text-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl">
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1.5 sm:mb-2">
+                        <span>02 • Precision Hatchbacks & Crossovers</span>
+                    </div>
+                    <h2 class="font-display font-extrabold text-lg sm:text-2xl tracking-tight leading-tight mb-1.5 sm:mb-2">
+                        VW Polo GTI & Ford EcoSport Titanium
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                        From 147kW DSG hot-hatch performance to high-riding compact SUV comfort, every car is roadworthy-certified.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button type="button" data-open-modal="2" class="px-3.5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition">
+                            Inspect Polo GTI
+                        </button>
+                        <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20am%20interested%20in%20your%20VW%20Polo%20GTI%20and%20Ford%20EcoSport."
+                           target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-1.5 bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow transition">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                            <span>WhatsApp Enquire</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- STAGE 03 (49% - 72%): Toyota Hilux 2.8 GD-6 + Canopy Completes V-Formation -->
+                <div id="hud-stage-2" class="hud-stage-card bottom-4 sm:bottom-10 inset-x-3 sm:inset-x-auto sm:left-8 sm:max-w-md bg-navy-900/92 backdrop-blur-xl text-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl">
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-blue-600/25 border border-sky-400/30 text-sky-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1.5 sm:mb-2">
+                        <span>03 • Lowveld Work & Safari Tough</span>
+                    </div>
+                    <h2 class="font-display font-extrabold text-lg sm:text-2xl tracking-tight leading-tight mb-1.5 sm:mb-2">
+                        Hilux 2.8 GD-6 Raider & Ranger Wildtrak
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4">
+                        Our double-cab 4x4 bakkies come with verified service histories, canopies, towbars, and fast bank finance approval.
+                    </p>
+                    <div class="flex items-center gap-2">
+                        <button type="button" data-open-modal="4" class="px-3.5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs transition">
+                            Inspect Hilux 2.8
+                        </button>
+                        <a href="#finance" class="px-3.5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition">
+                            Calculate Installment
+                        </a>
+                    </div>
+                </div>
+
+                <!-- STAGE 04 (73% - 100%): Full 4-Car Studio Formation Complete -->
+                <div id="hud-stage-3" class="hud-stage-card bottom-4 sm:bottom-7 left-1/2 w-[94%] max-w-2xl bg-navy-900/95 backdrop-blur-xl text-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-white/15 shadow-2xl text-center">
+                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider mb-1">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                        <span>04 • Tap Any Vehicle Above to Inspect Specs</span>
+                    </div>
+                    <h2 class="font-display font-extrabold text-base sm:text-2xl tracking-tight mb-1">
+                        Premium Selection Lineup Ready in Malalane
+                    </h2>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-3">
+                        Tap any of the 4 vehicles in the studio above for full specifications or scroll down to browse our complete showroom catalogue.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <a href="#inventory" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition">
+                            <span>Explore Full Showroom (8 Cars)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </a>
+                        <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20just%20viewed%20your%20Premium%20Selection%20studio%20lineup%20and%20want%20to%20book%20a%20test%20drive."
+                           target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center gap-2 bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                            <span>Book Test Drive</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Scroll Down Cue at Bottom Right -->
+                <div id="scroll-cue" class="hidden md:flex items-center gap-2 absolute bottom-6 right-6 text-white bg-navy-900/85 backdrop-blur-md px-3.5 py-2 rounded-full border border-white/15 text-[11px] font-semibold transition-opacity duration-300">
+                    <span>Scroll to drive studio showcase</span>
+                    <i class="fa-solid fa-computer-mouse text-sky-400 animate-bounce"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Vehicle Finder Strip -->
+    <section class="bg-navy-900 py-6 sm:py-8 border-t border-b border-slate-800/90">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-[#0F172A] text-slate-100 rounded-2xl p-4 sm:p-6 shadow-2xl border border-slate-800">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 items-end">
+                    <div>
+                        <label for="hero-make" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Make / Brand</label>
+                        <select id="hero-make" class="w-full rounded-xl border border-slate-700 bg-navy-900 px-3.5 py-3 text-sm font-medium text-white focus:border-sky-400 focus:outline-none">
+                            <option value="all">All Makes</option>
+                            <option value="Ford">Ford</option>
+                            <option value="Toyota">Toyota</option>
+                            <option value="Volkswagen">Volkswagen</option>
+                            <option value="Mercedes-Benz">Mercedes-Benz</option>
+                            <option value="Suzuki">Suzuki</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="hero-category" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Body Type</label>
+                        <select id="hero-category" class="w-full rounded-xl border border-slate-700 bg-navy-900 px-3.5 py-3 text-sm font-medium text-white focus:border-sky-400 focus:outline-none">
+                            <option value="all">All Body Types</option>
+                            <option value="Bakkies & 4x4">Bakkies & 4x4</option>
+                            <option value="SUVs">SUVs</option>
+                            <option value="Hatchbacks & Sedans">Hatchbacks & Sedans</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="hero-price" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">Max Budget (ZAR)</label>
+                        <select id="hero-price" class="w-full rounded-xl border border-slate-700 bg-navy-900 px-3.5 py-3 text-sm font-medium text-white focus:border-sky-400 focus:outline-none">
+                            <option value="9999999">Any Budget</option>
+                            <option value="260000">Up to R 260,000</option>
+                            <option value="400000">Up to R 400,000</option>
+                            <option value="560000">Up to R 560,000</option>
+                            <option value="700000">Up to R 700,000</option>
+                        </select>
+                    </div>
+                    <button type="button" id="hero-search-btn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-magnifying-glass text-sky-200"></i>
+                        <span>Find My Vehicle</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Highlights Strip -->
+    <section id="about" class="bg-navy-950 border-b border-slate-800/80 py-8 sm:py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-900/90 border border-slate-800">
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 text-sky-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-white text-sm">Roadworthy Certified</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Multi-point mechanical inspection and valid roadworthy certificate on delivery.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-900/90 border border-slate-800">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-building-columns text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-white text-sm">All Major Banks Finance</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Fast approvals arranged through WesBank, MFC, Standard Bank, and Absa.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-900/90 border border-slate-800">
+                    <div class="w-11 h-11 rounded-xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-right-left text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-white text-sm">Trade-Ins Welcome</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Fair market valuations on your current car or bakkie to reduce your deposit.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-900/90 border border-slate-800">
+                    <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 text-sky-400 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-route text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-display font-bold text-white text-sm">Convenient N4 Access</h3>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">Easily accessible along the N4 highway in Malalane for test drives.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showroom Inventory Section -->
+    <section id="inventory" class="py-14 sm:py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8 sm:mb-10">
+            <div>
+                <span class="text-sky-400 font-bold text-xs uppercase tracking-widest block mb-2">Malalane Showroom Catalogue</span>
+                <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight">Featured Vehicles in Stock</h2>
+            </div>
+            <p class="text-slate-400 text-xs sm:text-sm max-w-md">
+                Featuring our 4 studio showcase vehicles first. Tap any car for full specs or tap <strong class="text-emerald-400">Enquire</strong> to chat on WhatsApp.
+            </p>
+        </div>
+
+        <!-- Category Tabs with Sliding Active Pill & Search/Sort Controls -->
+        <div class="bg-navy-900 p-3 sm:p-4 rounded-2xl shadow-lg border border-slate-800 mb-6 sm:mb-8 flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 sm:gap-4">
+            <div class="relative flex overflow-x-auto no-scrollbar gap-1.5 p-1 bg-navy-950 rounded-xl border border-slate-800/80" id="category-filters">
+                <div id="category-slider-pill" class="absolute top-0 left-0 bg-blue-600 rounded-xl shadow-md pointer-events-none z-0"></div>
+                <button type="button" data-cat="all" class="filter-btn active relative z-10 shrink-0 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-white transition-colors duration-200">All Stock</button>
+                <button type="button" data-cat="Bakkies & 4x4" class="filter-btn relative z-10 shrink-0 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors duration-200">Bakkies & 4x4</button>
+                <button type="button" data-cat="SUVs" class="filter-btn relative z-10 shrink-0 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors duration-200">SUVs</button>
+                <button type="button" data-cat="Hatchbacks & Sedans" class="filter-btn relative z-10 shrink-0 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-colors duration-200">Hatchbacks & Sedans</button>
+            </div>
+
+            <!-- Live Search & Sort -->
+            <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-search text-slate-400 text-xs absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="inventory-search" placeholder="Search Ranger, Hilux, Polo..." class="w-full sm:w-56 pl-9 pr-4 py-2.5 rounded-xl border border-slate-700 bg-navy-950 text-xs font-medium text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                </div>
+                <select id="inventory-sort" class="rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-xs font-semibold text-white focus:border-sky-400 focus:outline-none">
+                    <option value="featured">Sort: Studio Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="year-desc">Year: Newest First</option>
+                    <option value="mileage-asc">Mileage: Lowest First</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Results Counter -->
+        <div class="flex justify-between items-center mb-5 text-xs text-slate-400">
+            <span id="results-count">Showing 8 vehicles</span>
+            <button type="button" id="reset-filters-btn" class="text-sky-400 font-semibold hover:underline">Reset Filters</button>
+        </div>
+
+        <!-- Vehicle Grid -->
+        <div id="vehicle-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6"></div>
+
+        <!-- Empty State -->
+        <div id="no-results" class="hidden text-center py-16 bg-navy-900 rounded-3xl border border-slate-800">
+            <div class="w-16 h-16 rounded-2xl bg-slate-800 text-sky-400 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-car-burst text-2xl"></i>
+            </div>
+            <h3 class="font-display font-bold text-lg text-white">No matching vehicles found</h3>
+            <p class="text-slate-400 text-sm mt-1 max-w-md mx-auto px-4">Try clearing your search filters or message Dicky's Car Sales on WhatsApp—we source specific vehicles on request!</p>
+            <div class="mt-6 flex flex-wrap justify-center gap-3 px-4">
+                <button type="button" id="empty-reset-btn" class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold">Show All Vehicles</button>
+                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20am%20looking%20for%20a%20specific%20vehicle." target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 rounded-xl bg-whatsapp-500 text-white text-xs font-bold flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp"></i> Request a Vehicle
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive ZAR Finance Calculator Section -->
+    <section id="finance" class="py-14 sm:py-16 lg:py-24 bg-navy-900 border-t border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+                <span class="text-sky-400 font-bold text-xs uppercase tracking-widest block mb-2">Smart Budgeting</span>
+                <h2 class="font-display font-extrabold text-2xl sm:text-4xl text-white tracking-tight">ZAR Finance Calculator</h2>
+                <p class="text-slate-400 text-xs sm:text-sm mt-2.5">
+                    Adjust the sliders below to estimate your monthly vehicle repayment and send your quote straight to Dicky's Car Sales on WhatsApp.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-navy-950 rounded-3xl p-5 sm:p-10 border border-slate-800 shadow-2xl">
+                <!-- Sliders Column -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div>
+                        <div class="flex justify-between text-xs sm:text-sm font-bold text-slate-200 mb-2">
+                            <label for="calc-price">Vehicle Price</label>
+                            <span id="calc-price-display" class="text-sky-400 bg-blue-950/80 border border-sky-500/30 px-3 py-0.5 rounded-lg">R 389,900</span>
+                        </div>
+                        <input type="range" id="calc-price" min="120000" max="900000" step="5000" value="389900" class="w-full">
+                        <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                            <span>R 120,000</span>
+                            <span>R 900,000</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs sm:text-sm font-bold text-slate-200 mb-2">
+                            <label for="calc-deposit">Deposit Amount</label>
+                            <span id="calc-deposit-display" class="text-white bg-navy-900 border border-slate-700 px-3 py-0.5 rounded-lg">R 40,000 (10%)</span>
+                        </div>
+                        <input type="range" id="calc-deposit" min="0" max="350000" step="5000" value="40000" class="w-full">
+                        <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                            <span>R 0 (No Deposit)</span>
+                            <span>R 350,000</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <div class="flex justify-between text-xs sm:text-sm font-bold text-slate-200 mb-2">
+                                <label for="calc-months">Repayment Term</label>
+                                <span id="calc-months-display" class="text-sky-400">60 Months</span>
+                            </div>
+                            <input type="range" id="calc-months" min="12" max="72" step="12" value="60" class="w-full">
+                            <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                                <span>12m</span>
+                                <span>48m</span>
+                                <span>72m</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs sm:text-sm font-bold text-slate-200 mb-2">
+                                <label for="calc-rate">Est. Interest Rate</label>
+                                <span id="calc-rate-display" class="text-sky-400">11.75%</span>
+                            </div>
+                            <input type="range" id="calc-rate" min="8.5" max="16.5" step="0.25" value="11.75" class="w-full">
+                            <div class="flex justify-between text-[11px] text-slate-500 mt-1">
+                                <span>8.5%</span>
+                                <span>Prime ~11.75%</span>
+                                <span>16.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estimated Output Card -->
+                <div class="lg:col-span-5 bg-gradient-to-br from-navy-900 via-[#0F1B33] to-navy-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl border border-sky-500/20 relative overflow-hidden">
+                    <div class="absolute -right-8 -top-8 w-36 h-36 bg-blue-500/20 rounded-full blur-2xl"></div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-sky-400 block mb-1">Estimated Monthly Installment</span>
+                    <div class="font-display font-extrabold text-3xl sm:text-5xl tracking-tight text-white my-3" id="calc-monthly-result">
+                        R 7,739 /pm
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-6">
+                        *Indicative calculation excluding initiation & monthly admin fees. Subject to bank approval and credit profile.
+                    </p>
+
+                    <div class="space-y-2.5 border-t border-slate-800 pt-4 mb-6 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Principal Loan Amount:</span>
+                            <span class="font-bold text-white" id="calc-principal-display">R 349,900</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Term & Rate:</span>
+                            <span class="font-bold text-white" id="calc-summary-display">60 months @ 11.75%</span>
+                        </div>
+                    </div>
+
+                    <a id="calc-whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer"
+                       class="w-full py-3.5 px-5 rounded-xl bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs sm:text-sm shadow-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Send Finance Quote via WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trade-In / Sell Your Car Section -->
+    <section id="trade-in" class="py-14 sm:py-16 lg:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-br from-navy-900 via-navy-850 to-navy-900 rounded-3xl overflow-hidden shadow-2xl border border-slate-800 grid grid-cols-1 lg:grid-cols-12">
+            <div class="lg:col-span-6 p-6 sm:p-12 text-white flex flex-col justify-center">
+                <span class="inline-flex items-center gap-2 text-sky-400 font-bold text-xs uppercase tracking-widest mb-3">
+                    <i class="fa-solid fa-handshake"></i> Instant Valuation Request
+                </span>
+                <h2 class="font-display font-extrabold text-2xl sm:text-4xl tracking-tight mb-4">
+                    Looking to Sell or Trade In Your Current Car?
+                </h2>
+                <p class="text-slate-300 text-xs sm:text-base leading-relaxed mb-6">
+                    We buy clean, well-maintained vehicles for cash or offer top trade-in values towards any car on our Malalane showroom floor. Fill in your vehicle's details and send them directly to Dicky's Car Sales on WhatsApp.
+                </p>
+                <ul class="space-y-3 text-xs sm:text-sm text-slate-300">
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                        <span>Fast, obligation-free market appraisal</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                        <span>Existing bank settlement handled smoothly</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                        <span>Immediate EFT payment or trade-in credit</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="lg:col-span-6 bg-[#0B1325] p-6 sm:p-12 border-t lg:border-t-0 lg:border-l border-slate-800">
+                <h3 class="font-display font-bold text-lg sm:text-xl text-white mb-5">Send Vehicle Details via WhatsApp</h3>
+                <form id="tradein-form" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="ti-name" class="block text-xs font-bold text-slate-300 mb-1">Your Name *</label>
+                            <input type="text" id="ti-name" required placeholder="e.g. Johan van der Merwe" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="ti-phone" class="block text-xs font-bold text-slate-300 mb-1">Contact Number *</label>
+                            <input type="tel" id="ti-phone" required placeholder="e.g. 082 123 4567" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label for="ti-year" class="block text-xs font-bold text-slate-300 mb-1">Year *</label>
+                            <input type="number" id="ti-year" required placeholder="2020" min="1995" max="2026" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label for="ti-car" class="block text-xs font-bold text-slate-300 mb-1">Make & Model *</label>
+                            <input type="text" id="ti-car" required placeholder="e.g. Toyota Hilux 2.4 GD-6" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="ti-km" class="block text-xs font-bold text-slate-300 mb-1">Current Mileage (km) *</label>
+                            <input type="number" id="ti-km" required placeholder="e.g. 85000" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white placeholder-slate-500 focus:border-sky-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="ti-condition" class="block text-xs font-bold text-slate-300 mb-1">Service History & Condition</label>
+                            <select id="ti-condition" class="w-full rounded-xl border border-slate-700 bg-navy-950 px-3.5 py-2.5 text-sm text-white focus:border-sky-400 focus:outline-none">
+                                <option value="Full Service History - Excellent">Full Service History - Excellent</option>
+                                <option value="Partial Service History - Good">Partial Service History - Good</option>
+                                <option value="Fair Condition">Fair Condition</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3.5 px-6 rounded-xl bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2 mt-2">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span>Get Valuation via WhatsApp</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showroom Location, Trading Hours & Map Section -->
+    <section id="contact" class="py-14 sm:py-16 lg:py-24 bg-navy-900 border-t border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-10 items-start">
+                <!-- Dealership Details -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div>
+                        <span class="text-sky-400 font-bold text-xs uppercase tracking-widest block mb-2">Visit Our Showroom</span>
+                        <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">Find Us on the N4 in Malalane</h2>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">
+                            Stop by for a coffee, inspect our showroom stock in person, and take your favourite vehicle for a test drive.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-950 border border-slate-800">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-sky-400 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Showroom Address</h4>
+                                <p class="text-xs sm:text-sm text-slate-300 mt-0.5">Stand 56, of farm 239ju, N4, Malalane, 1320</p>
+                                <a href="https://maps.app.goo.gl/1Dm6KEhdu3omDBu66" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:underline mt-1.5">
+                                    <span>Open in Google Maps</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-950 border border-slate-800">
+                            <div class="w-10 h-10 rounded-xl bg-whatsapp-500 text-white flex items-center justify-center shrink-0">
+                                <i class="fa-brands fa-whatsapp text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-white text-sm">Phone & Direct WhatsApp</h4>
+                                <p class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                                    Call: <a href="tel:0662360624" class="font-semibold text-white hover:underline">066 236 0624</a>
+                                </p>
+                                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20would%20like%20to%20book%20a%20test%20drive%20or%20visit%20your%20showroom." target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:underline mt-1.5">
+                                    <span>Start WhatsApp Chat (+27 66 236 0624)</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-4 p-4 rounded-2xl bg-navy-950 border border-slate-800">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-sky-400 flex items-center justify-center shrink-0">
+                                <i class="fa-regular fa-clock"></i>
+                            </div>
+                            <div class="w-full">
+                                <h4 class="font-bold text-white text-sm mb-2">Trading Hours</h4>
+                                <div class="space-y-1.5 text-xs">
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Monday – Friday</span>
+                                        <span class="font-bold text-white">9:00 AM – 5:00 PM</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Saturday</span>
+                                        <span class="font-bold text-white">9:00 AM – 12:00 PM</span>
+                                    </div>
+                                    <div class="flex justify-between text-slate-400">
+                                        <span>Sunday</span>
+                                        <span class="font-bold text-rose-400">Closed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Map Embed & Directions Card -->
+                <div class="lg:col-span-7">
+                    <div class="rounded-3xl overflow-hidden border border-slate-800 shadow-2xl bg-navy-950">
+                        <div class="relative h-72 sm:h-96 w-full">
+                            <iframe
+                                title="Dicky's Car Sales Malalane Location"
+                                src="https://maps.google.com/maps?q=Stand%2056%20N4%20Malalane%201320&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                                class="w-full h-full border-0"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                        <div class="p-4 sm:p-5 bg-navy-950 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-t border-slate-800">
+                            <div>
+                                <div class="font-display font-bold text-sm sm:text-base">Dicky's Car Sales — Malalane</div>
+                                <div class="text-xs text-slate-400">Stand 56, of farm 239ju, N4, Malalane, 1320</div>
+                            </div>
+                            <a href="https://maps.app.goo.gl/1Dm6KEhdu3omDBu66" target="_blank" rel="noopener noreferrer"
+                               class="w-full sm:w-auto justify-center px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition flex items-center gap-2 shrink-0">
+                                <i class="fa-solid fa-location-arrow"></i>
+                                <span>Navigate with Google Maps</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-950 text-slate-400 pt-12 sm:pt-14 pb-24 md:pb-12 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 pb-10 border-b border-slate-800/80">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-car-side"></i>
+                        </div>
+                        <span class="font-display font-extrabold text-lg text-white">DICKY'S CAR SALES</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-slate-400 max-w-sm">
+                        Quality pre-owned bakkies, SUVs, and passenger vehicles on the N4 in Malalane. Honest deals, bank finance assistance, and direct WhatsApp service.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="font-display font-bold text-white text-sm mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-xs">
+                        <li><a href="#scrollStudioSection" class="hover:text-sky-400 transition">Interactive Studio</a></li>
+                        <li><a href="#inventory" class="hover:text-sky-400 transition">Showroom Inventory</a></li>
+                        <li><a href="#finance" class="hover:text-sky-400 transition">ZAR Finance Calculator</a></li>
+                        <li><a href="#trade-in" class="hover:text-sky-400 transition">Sell or Trade-In Your Vehicle</a></li>
+                        <li><a href="#contact" class="hover:text-sky-400 transition">Showroom Location & Hours</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-display font-bold text-white text-sm mb-4">Direct Dealer Contact</h4>
+                    <ul class="space-y-2.5 text-xs">
+                        <li class="flex items-start gap-2.5">
+                            <i class="fa-solid fa-location-dot text-sky-400 mt-0.5"></i>
+                            <span>Stand 56, of farm 239ju, N4, Malalane, 1320</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-phone text-sky-400"></i>
+                            <a href="tel:0662360624" class="hover:text-white">066 236 0624</a>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <i class="fa-brands fa-whatsapp text-emerald-400 text-sm"></i>
+                            <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!" target="_blank" rel="noopener noreferrer" class="hover:text-white">Chat on WhatsApp</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-[11px] text-slate-500 text-center sm:text-left">
+                <p>&copy; <span id="current-year"></span> Dicky's Car Sales Malalane. All rights reserved.</p>
+                <p>Demo vehicle listings shown for showcase purposes. E&amp;OE.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Vehicle Details Modal (Mobile Bottom-Sheet & Desktop Centered Modal) -->
+    <div id="vehicle-modal" class="modal-backdrop fixed inset-0 z-50 hidden overflow-y-auto bg-black/85 backdrop-blur-md p-0 sm:p-6 flex items-end sm:items-center justify-center">
+        <div class="modal-card relative bg-navy-900 w-full max-w-4xl rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden border-t sm:border border-slate-700 max-h-[92dvh] sm:max-h-none overflow-y-auto text-white">
+            <button type="button" id="close-modal-btn" aria-label="Close Modal" class="absolute top-3.5 right-3.5 z-10 w-10 h-10 rounded-full bg-navy-950/90 text-white hover:bg-blue-600 border border-white/15 flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modal-content" class="grid grid-cols-1 lg:grid-cols-12"></div>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Quick-Chat Widget -->
+    <div class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-40 flex flex-col items-end">
+        <div id="wa-popup" class="wa-widget-panel mb-3 w-[88vw] max-w-[320px] bg-navy-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
+            <div class="bg-whatsapp-700 text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-brands fa-whatsapp text-2xl"></i>
+                    </div>
+                    <div>
+                        <div class="font-bold text-sm">Dicky's Car Sales</div>
+                        <div class="text-[11px] text-emerald-100 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-300"></span> Online • Malalane N4
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="close-wa-widget-btn" aria-label="Close Chat" class="text-white/80 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 bg-navy-950 space-y-2.5 text-xs">
+                <div class="bg-navy-900 p-3 rounded-xl rounded-tl-none shadow-xs border border-slate-800 text-slate-200">
+                    Hi there! Welcome to <strong class="text-white">Dicky's Car Sales</strong> in Malalane. How can we assist you today?
+                </div>
+                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20would%20like%20to%20enquire%20about%20vehicles%20currently%20in%20stock." target="_blank" rel="noopener noreferrer"
+                   class="block w-full text-left p-2.5 rounded-xl bg-navy-900 hover:bg-slate-800 border border-slate-800 font-semibold text-white transition">
+                    1. Ask about available cars in stock
+                </a>
+                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20would%20like%20to%20book%20a%20test%20drive%20at%20your%20Malalane%20showroom." target="_blank" rel="noopener noreferrer"
+                   class="block w-full text-left p-2.5 rounded-xl bg-navy-900 hover:bg-slate-800 border border-slate-800 font-semibold text-white transition">
+                    2. Book a test drive on the N4
+                </a>
+                <a href="https://wa.me/27662360624?text=Hello%20Dicky's%20Car%20Sales!%20I%20would%20like%20assistance%20with%20vehicle%20finance." target="_blank" rel="noopener noreferrer"
+                   class="block w-full text-left p-2.5 rounded-xl bg-navy-900 hover:bg-slate-800 border border-slate-800 font-semibold text-white transition">
+                    3. Enquire about bank finance
+                </a>
+            </div>
+        </div>
+
+        <button type="button" id="toggle-wa-widget-btn" aria-label="Chat on WhatsApp" class="wa-pulse relative flex items-center gap-2 bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-sm px-4 py-3.5 sm:px-5 rounded-full shadow-xl transition transform hover:scale-105">
+            <i class="fa-brands fa-whatsapp text-2xl"></i>
+            <span class="hidden sm:inline">WhatsApp Dealer</span>
+        </button>
+    </div>
+
+    <!-- Application JavaScript (Pure DOM APIs, Zero Template Literal HTML Leaks) -->
+    <script>
+        const DEALER_WHATSAPP = "27662360624";
+
+        // 8 Real-Life South African Showroom Vehicles
+        const vehicles = [
+            {
+                id: 1,
+                year: 2022,
+                make: "Ford",
+                model: "Ranger 2.0 Bi-Turbo Wildtrak 4x4",
+                category: "Bakkies & 4x4",
+                price: 549900,
+                mileage: 58000,
+                transmission: "Automatic",
+                fuel: "Diesel",
+                color: "Frozen White",
+                badge: "Studio Showcase #1",
+                image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=85",
+                features: ["10-Speed Automatic", "Wildtrak Leather Trim", "Roller Shutter & Towbar", "Adaptive Cruise Control", "Front & Rear PDC", "Full Service History"],
+                description: "Star of Stage 01 in our interactive studio showcase. Commanding Frozen White Ford Ranger 2.0 Bi-Turbo Wildtrak 4x4 Double Cab, Dekra roadworthy-certified and ready for immediate delivery in Malalane."
+            },
+            {
+                id: 2,
+                year: 2021,
+                make: "Volkswagen",
+                model: "Polo GTI 2.0 TSI DSG",
+                category: "Hatchbacks & Sedans",
+                price: 389900,
+                mileage: 42000,
+                transmission: "Automatic (DSG)",
+                fuel: "Petrol",
+                color: "Pure White",
+                badge: "Studio Showcase #2",
+                image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=1000&q=85",
+                features: ["147kW 2.0 TSI Turbo Engine", "Black Contrast Panoramic Roof", "Red GTI Grille & Calipers", "Digital Cockpit & CarPlay", "LED Matrix Headlights", "Full VW Service History"],
+                description: "Featured in Stage 02 of our interactive studio showcase. Pure White VW Polo GTI with contrast black roof, signature red GTI detailing, and full franchise service history."
+            },
+            {
+                id: 3,
+                year: 2021,
+                make: "Ford",
+                model: "EcoSport 1.0 EcoBoost Titanium",
+                category: "SUVs",
+                price: 249900,
+                mileage: 49500,
+                transmission: "Automatic",
+                fuel: "Petrol",
+                color: "Magnetic Grey",
+                badge: "Studio Showcase #3",
+                image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1000&q=85",
+                features: ["Titanium Partial Leather", "SYNC 3 Apple CarPlay", "Keyless Entry & Start", "Rear Park Distance Control", "Roof Rails & Alloys", "Full Service History"],
+                description: "Featured in our interactive studio showcase. Versatile Magnetic Grey Ford EcoSport 1.0 EcoBoost Titanium offering elevated ground clearance and outstanding fuel economy."
+            },
+            {
+                id: 4,
+                year: 2023,
+                make: "Toyota",
+                model: "Hilux 2.8 GD-6 Raider 4x4 D/Cab + Canopy",
+                category: "Bakkies & 4x4",
+                price: 619900,
+                mileage: 36500,
+                transmission: "Automatic",
+                fuel: "Diesel",
+                color: "Glacier White",
+                badge: "Studio Showcase #4",
+                image: "https://images.unsplash.com/photo-1559416523-140ddc3d238c?auto=format&fit=crop&w=1000&q=85",
+                features: ["Color-Coded White Canopy", "Full Toyota Service History", "4x4 Diff-Lock & Downhill Assist", "Towbar & Reverse Camera", "Apple CarPlay / Android Auto", "Balance of Warranty"],
+                description: "Completes the 4-vehicle V-formation in our studio showcase. Immaculate Glacier White Toyota Hilux 2.8 GD-6 Raider Double Cab fitted with a matching executive canopy."
+            },
+            {
+                id: 5,
+                year: 2021,
+                make: "Toyota",
+                model: "Fortuner 2.8 GD-6 4x4 VX Auto",
+                category: "SUVs",
+                price: 539900,
+                mileage: 69000,
+                transmission: "Automatic",
+                fuel: "Diesel",
+                color: "Chromium Silver",
+                badge: "7-Seater Family SUV",
+                image: "https://images.unsplash.com/photo-1605893477799-b99e3b8b93fe?auto=format&fit=crop&w=1000&q=85",
+                features: ["7-Seater Leather Cabin", "360 Surround Camera", "JBL Premium Audio", "Power Tailgate", "Towbar Fitted", "Full Service History"],
+                description: "South Africa's favourite 7-seater family and safari SUV. Clean condition inside and out with full agents service record."
+            },
+            {
+                id: 6,
+                year: 2022,
+                make: "Volkswagen",
+                model: "Polo Vivo 1.4 Comfortline",
+                category: "Hatchbacks & Sedans",
+                price: 214900,
+                mileage: 46000,
+                transmission: "Manual",
+                fuel: "Petrol",
+                color: "Reflex Silver",
+                badge: "Fuel Saver",
+                image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=85",
+                features: ["Full Service History", "Touchscreen Radio & Bluetooth", "Air Conditioning", "Multi-Function Steering", "Front Fog Lights", "Spare Key Included"],
+                description: "Dependable, light on fuel, and affordable to insure and maintain. Ready for daily commuting around Malalane and Mpumalanga."
+            },
+            {
+                id: 7,
+                year: 2020,
+                make: "Mercedes-Benz",
+                model: "C200 AMG Line Auto",
+                category: "Hatchbacks & Sedans",
+                price: 459900,
+                mileage: 64000,
+                transmission: "Automatic",
+                fuel: "Petrol",
+                color: "Obsidian Black",
+                badge: "AMG Line",
+                image: "https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=1000&q=85",
+                features: ["AMG Line Exterior & Interior", "Panoramic Sliding Sunroof", "Digital Instrument Cluster", "LED High Performance Lamps", "Leather Sports Seats", "Full Franchise History"],
+                description: "Executive refinement meets sporty AMG styling. Immaculate Obsidian Black Mercedes-Benz C200 AMG Line available at Dicky's Car Sales in Malalane."
+            },
+            {
+                id: 8,
+                year: 2023,
+                make: "Suzuki",
+                model: "Swift 1.2 GLX Auto",
+                category: "Hatchbacks & Sedans",
+                price: 209900,
+                mileage: 24000,
+                transmission: "Automatic",
+                fuel: "Petrol",
+                color: "Arctic White",
+                badge: "Low Mileage",
+                image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1000&q=85",
+                features: ["7-Inch Touchscreen CarPlay", "Keyless Push-Button Start", "Reverse Camera & PDC", "LED Projector Headlamps", "15-Inch Diamond-Cut Alloys", "4.9L/100km Fuel Economy"],
+                description: "Ultra-economical and zippy automatic hatchback with Apple CarPlay, reverse camera, and balance of factory warranty."
+            }
+        ];
+
+        // Showroom Filter State
+        let activeCategory = "all";
+        let activeMake = "all";
+        let maxPriceFilter = 9999999;
+        let searchQuery = "";
+        let sortOption = "featured";
+
+        // Scroll Studio & Camera Physics State (Camera Shake Turned OFF by default as requested)
+        let nativeVideoReady = false;
+        let videoDuration = 10.0;
+        let targetProgress = 0;
+        let smoothProgress = 0;
+        let scrollVelocity = 0;
+        let smoothVelocity = 0;
+        let impactTrauma = 0;
+        let lastBeatIndex = -1;
+        let shakeTime = 0;
+        let shakeMode = 0; // 0 = OFF (default), 1 = ON, 2 = MAX
+        let mouseTiltX = 0;
+        let mouseTiltY = 0;
+
+        // 36 Studio Bokeh Light Particles for Depth Perception
+        const studioParticles = Array.from({ length: 36 }, (_, i) => ({
+            x: ((Math.sin(i * 12.9898) * 43758.5453) % 1 + 1) % 1,
+            y: ((Math.cos(i * 78.233) * 23421.631) % 1 + 1) % 1,
+            z: i / 36,
+            size: 1.5 + (i % 4) * 1.1
+        }));
+
+        function el(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined && text !== null) node.textContent = text;
+            return node;
+        }
+
+        function formatZAR(amount) {
+            return "R " + Math.round(amount).toLocaleString("en-ZA");
+        }
+
+        function formatKm(km) {
+            return km.toLocaleString("en-ZA") + " km";
+        }
+
+        function estimateMonthly(price) {
+            const principal = price * 0.90;
+            const monthlyRate = (11.75 / 100) / 12;
+            const n = 60;
+            return Math.round((principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -n)));
+        }
+
+        function getVehicleWhatsAppUrl(car) {
+            const msg = "Hello Dicky's Car Sales! I saw the " + car.year + " " + car.make + " " + car.model + " (" + formatKm(car.mileage) + ", listed at " + formatZAR(car.price) + ") on your website. Is it still available?";
+            return "https://wa.me/" + DEALER_WHATSAPP + "?text=" + encodeURIComponent(msg);
+        }
+
+        function cycleShakeMode() {
+            shakeMode = (shakeMode + 1) % 3;
+            const label = document.getElementById("shake-mode-label");
+            if (!label) return;
+            if (shakeMode === 1) {
+                label.textContent = "Camera Shake: ON";
+            } else if (shakeMode === 2) {
+                label.textContent = "Camera Shake: MAX";
+                impactTrauma = Math.min(1.0, impactTrauma + 0.65);
+            } else {
+                label.textContent = "Camera Shake: OFF";
+            }
+        }
+
+        // Compute Smooth Stabilized 3D Camera Rig Pose from Scroll Progress (0.0 -> 1.0)
+        function getCameraPose(p) {
+            const isMobile = window.innerWidth < 640;
+            const motionScale = isMobile ? 0.55 : 1.0;
+            const orbitYaw = Math.sin(p * Math.PI * 2.4) * 6.5 * (1 - p * 0.45) * motionScale;
+            const orbitPitch = (4.0 * Math.cos(p * Math.PI * 1.8) - 1.0) * motionScale;
+            const dutchRoll = Math.sin(p * Math.PI * 3.0) * 1.4 * (1 - p * 0.5) * motionScale;
+            const dollyScale = 1.01 + Math.sin(p * Math.PI * 2.0) * 0.05 * motionScale + (p > 0.72 ? (p - 0.72) * 0.08 * motionScale : 0);
+            const truckX = Math.sin(p * Math.PI * 2.0) * -22 * (1 - p * 0.4) * motionScale;
+            const pedestalY = Math.cos(p * Math.PI * 2.0) * 10 * motionScale;
+            const focalMm = Math.round(32 + (dollyScale - 0.96) * 150);
+
+            return { orbitYaw, orbitPitch, dutchRoll, dollyScale, truckX, pedestalY, focalMm };
+        }
+
+        // Render Dark Midnight Carbon & Cobalt Automotive Showroom Environment
+        function renderStudioEnvironment(progress, camPose) {
+            const canvas = document.getElementById("studioEnvCanvas");
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const vpX = w * (0.5 - (camPose.orbitYaw / 46) + (mouseTiltY / 70));
+            const vpY = h * (0.48 + (camPose.orbitPitch / 60) - (mouseTiltX / 70));
+
+            // 1. Deep Midnight Carbon Architecture Wall & Ceiling Gradient (#03060C -> #091224 -> #0F1D38)
+            const wallGrad = ctx.createLinearGradient(0, 0, 0, vpY + 24);
+            wallGrad.addColorStop(0, "#03060C");
+            wallGrad.addColorStop(0.55, "#081020");
+            wallGrad.addColorStop(1, "#0E1B34");
+            ctx.fillStyle = wallGrad;
+            ctx.fillRect(0, 0, w, vpY + 24);
+
+            // Ambient Cobalt Showroom Backwall Spotlight Glow
+            const ambientGlow = ctx.createRadialGradient(vpX, vpY * 0.88, w * 0.03, vpX, vpY * 0.92, w * 0.65);
+            ambientGlow.addColorStop(0, "rgba(37, 99, 235, 0.28)");
+            ambientGlow.addColorStop(0.45, "rgba(56, 189, 248, 0.10)");
+            ambientGlow.addColorStop(1, "rgba(5, 9, 20, 0)");
+            ctx.fillStyle = ambientGlow;
+            ctx.fillRect(0, 0, w, vpY + 30);
+
+            // Architectural Dark Carbon Showroom Pillars in Mid-Ground Parallax
+            ctx.save();
+            for (let p = -3; p <= 3; p++) {
+                if (p === 0) continue;
+                const pillarX = vpX + (p * w * 0.16) - (camPose.orbitYaw * 6);
+                const pillarW = w * 0.018;
+                const pillarGrad = ctx.createLinearGradient(pillarX, 0, pillarX + pillarW, 0);
+                pillarGrad.addColorStop(0, "rgba(15, 23, 42, 0.65)");
+                pillarGrad.addColorStop(0.5, "rgba(30, 41, 59, 0.45)");
+                pillarGrad.addColorStop(1, "rgba(5, 9, 20, 0.75)");
+                ctx.fillStyle = pillarGrad;
+                ctx.fillRect(pillarX - pillarW / 2, 0, pillarW, vpY);
+
+                ctx.fillStyle = "rgba(56, 189, 248, 0.16)";
+                ctx.fillRect(pillarX, h * 0.08, 1.5, vpY - h * 0.12);
+            }
+            ctx.restore();
+
+            // 2. Polished Dark Obsidian Showroom Floor Gradient (#0D182E -> #070E1C -> #02050B)
+            const floorGrad = ctx.createLinearGradient(0, vpY, 0, h);
+            floorGrad.addColorStop(0, "#0D182E");
+            floorGrad.addColorStop(0.35, "#070E1C");
+            floorGrad.addColorStop(1, "#02050B");
+            ctx.fillStyle = floorGrad;
+            ctx.fillRect(0, vpY, w, h - vpY);
+
+            // Specular Cobalt Floor Sheen under the 4-Car Formation
+            const floorSheen = ctx.createRadialGradient(vpX, vpY + (h - vpY) * 0.34, w * 0.05, vpX, vpY + (h - vpY) * 0.34, w * 0.52);
+            floorSheen.addColorStop(0, "rgba(56, 189, 248, 0.16)");
+            floorSheen.addColorStop(0.5, "rgba(37, 99, 235, 0.08)");
+            floorSheen.addColorStop(1, "rgba(2, 5, 11, 0)");
+            ctx.fillStyle = floorSheen;
+            ctx.fillRect(0, vpY, w, h - vpY);
+
+            // Glowing Horizon Separation Seam
+            const horizonLine = ctx.createLinearGradient(0, vpY, w, vpY);
+            horizonLine.addColorStop(0, "rgba(56, 189, 248, 0)");
+            horizonLine.addColorStop(0.25, "rgba(37, 99, 235, 0.45)");
+            horizonLine.addColorStop(0.5, "rgba(56, 189, 248, 0.75)");
+            horizonLine.addColorStop(0.75, "rgba(37, 99, 235, 0.45)");
+            horizonLine.addColorStop(1, "rgba(56, 189, 248, 0)");
+            ctx.fillStyle = horizonLine;
+            ctx.fillRect(0, vpY - 1, w, 2);
+
+            // 3. Overhead Luxury Showroom LED Light Banks & Volumetric Cones
+            ctx.save();
+            for (let b = -2; b <= 2; b++) {
+                const beamX = vpX + (b * w * 0.22) - (progress * w * 0.12);
+                const beamY = vpY * 0.14;
+
+                const coneGrad = ctx.createLinearGradient(beamX, beamY, beamX, vpY * 1.15);
+                coneGrad.addColorStop(0, "rgba(56, 189, 248, 0.12)");
+                coneGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
+                ctx.fillStyle = coneGrad;
+                ctx.beginPath();
+                ctx.moveTo(beamX - w * 0.055, beamY + h * 0.018);
+                ctx.lineTo(beamX + w * 0.055, beamY + h * 0.018);
+                ctx.lineTo(beamX + w * 0.12, vpY * 1.15);
+                ctx.lineTo(beamX - w * 0.12, vpY * 1.15);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+                ctx.beginPath();
+                ctx.roundRect(beamX - w * 0.065, beamY, w * 0.13, h * 0.02, 4);
+                ctx.fill();
+
+                ctx.fillStyle = "rgba(56, 189, 248, 0.85)";
+                ctx.fillRect(beamX - w * 0.055, beamY + h * 0.015, w * 0.11, 2.5);
+            }
+            ctx.restore();
+
+            // 4. Illuminated Cobalt/Cyan Perspective Floor Grid & Rotating Dark-Glass Turntable Rings
+            ctx.save();
+            ctx.lineWidth = Math.max(1, w * 0.0008);
+
+            const numRays = 18;
+            const rayOffset = (progress * 3.8) % 1;
+            for (let i = -numRays; i <= numRays; i++) {
+                const bottomX = vpX + (i + rayOffset) * (w * 0.12);
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.10)";
+                ctx.beginPath();
+                ctx.moveTo(vpX, vpY);
+                ctx.lineTo(bottomX, h);
+                ctx.stroke();
+            }
+
+            const gridScroll = (progress * 12) % 1;
+            for (let j = 1; j <= 11; j++) {
+                const depthNorm = Math.pow((j + gridScroll) / 12, 2.0);
+                const lineY = vpY + depthNorm * (h - vpY);
+                ctx.strokeStyle = "rgba(56, 189, 248, " + (0.04 + depthNorm * 0.16).toFixed(3) + ")";
+                ctx.beginPath();
+                ctx.moveTo(0, lineY);
+                ctx.lineTo(w, lineY);
+                ctx.stroke();
+            }
+
+            const turntableAngle = progress * Math.PI * 3.0;
+            [
+                { cx: vpX, cy: vpY + (h - vpY) * 0.34, rx: w * 0.42, ry: h * 0.11, color: "rgba(56, 189, 248, 0.38)" },
+                { cx: vpX, cy: vpY + (h - vpY) * 0.34, rx: w * 0.25, ry: h * 0.065, color: "rgba(37, 99, 235, 0.45)" }
+            ].forEach(ring => {
+                ctx.strokeStyle = ring.color;
+                ctx.lineWidth = Math.max(1.5, w * 0.0014);
+                ctx.setLineDash([16, 10]);
+                ctx.lineDashOffset = -turntableAngle * 55;
+                ctx.beginPath();
+                ctx.ellipse(ring.cx, ring.cy, ring.rx, ring.ry, 0, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+            ctx.restore();
+        }
+
+        // Choreograph the 4 Real-Life Photographic Vehicles as the User Scrolls (0% -> 100%)
+        function updateRealCarsChoreography(progress, camPose) {
+            const easeOutCubic = (t) => 1 - Math.pow(1 - Math.max(0, Math.min(1, t)), 3);
+            const isMobile = window.innerWidth < 640;
+            const slideDist = isMobile ? 160 : 320;
+            const parallaxX = -camPose.orbitYaw * 2.0 + mouseTiltY * 2.5;
+            const parallaxY = camPose.orbitPitch * 1.4 - mouseTiltX * 2.0;
+
+            // Backdrop Title ("PREMIUM SELECTION")
+            const backdropTitle = document.getElementById("studio-backdrop-title");
+            if (backdropTitle) {
+                const titleAlpha = Math.max(0, Math.min(1, (progress - 0.50) / 0.20));
+                backdropTitle.style.opacity = titleAlpha.toFixed(3);
+                backdropTitle.style.transform = "translate3d(-50%, " + ((1 - titleAlpha) * 16).toFixed(1) + "px, 0)";
+            }
+
+            // 1. Front-Left Lead Car: 2022 Ford Ranger Wildtrak (Enters 0% - 20%)
+            const rangerEl = document.getElementById("real-car-ranger");
+            if (rangerEl) {
+                const rawRanger = Math.min(1, (progress + 0.12) / 0.28);
+                const tRanger = easeOutCubic(rawRanger);
+                const offsetX = (1 - tRanger) * -slideDist + parallaxX * 1.1;
+                const scale = 0.90 + tRanger * 0.10;
+                rangerEl.style.opacity = Math.min(1, rawRanger * 1.8).toFixed(3);
+                rangerEl.style.transform = "translate3d(calc(-50% + " + offsetX.toFixed(1) + "px), calc(-50% + " + parallaxY.toFixed(1) + "px), 0) scale(" + scale.toFixed(3) + ")";
+            }
+
+            // 2. Front-Right Car: 2021 VW Polo GTI (Enters 12% - 38%)
+            const poloEl = document.getElementById("real-car-polo");
+            if (poloEl) {
+                const rawPolo = Math.max(0, Math.min(1, (progress - 0.10) / 0.26));
+                const tPolo = easeOutCubic(rawPolo);
+                const offsetX = (1 - tPolo) * slideDist + parallaxX * 1.1;
+                const scale = 0.88 + tPolo * 0.12;
+                poloEl.style.opacity = Math.min(1, rawPolo * 2.2).toFixed(3);
+                poloEl.style.transform = "translate3d(calc(-50% + " + offsetX.toFixed(1) + "px), calc(-50% + " + parallaxY.toFixed(1) + "px), 0) scale(" + scale.toFixed(3) + ")";
+            }
+
+            // 3. Back-Left Car: 2021 Ford EcoSport Titanium (Enters 24% - 50%)
+            const ecoEl = document.getElementById("real-car-ecosport");
+            if (ecoEl) {
+                const rawEco = Math.max(0, Math.min(1, (progress - 0.24) / 0.25));
+                const tEco = easeOutCubic(rawEco);
+                const offsetX = (1 - tEco) * -(slideDist * 0.8) + parallaxX * 0.75;
+                const offsetY = (1 - tEco) * -28 + parallaxY * 0.75;
+                const scale = 0.84 + tEco * 0.16;
+                ecoEl.style.opacity = Math.min(1, rawEco * 2.2).toFixed(3);
+                ecoEl.style.transform = "translate3d(calc(-50% + " + offsetX.toFixed(1) + "px), calc(-50% + " + offsetY.toFixed(1) + "px), 0) scale(" + scale.toFixed(3) + ")";
+            }
+
+            // 4. Back-Right Car: 2023 Toyota Hilux 2.8 GD-6 + Canopy (Enters 40% - 66%)
+            const hiluxEl = document.getElementById("real-car-hilux");
+            if (hiluxEl) {
+                const rawHilux = Math.max(0, Math.min(1, (progress - 0.40) / 0.25));
+                const tHilux = easeOutCubic(rawHilux);
+                const offsetX = (1 - tHilux) * (slideDist * 0.8) + parallaxX * 0.75;
+                const offsetY = (1 - tHilux) * -28 + parallaxY * 0.75;
+                const scale = 0.84 + tHilux * 0.16;
+                hiluxEl.style.opacity = Math.min(1, rawHilux * 2.2).toFixed(3);
+                hiluxEl.style.transform = "translate3d(calc(-50% + " + offsetX.toFixed(1) + "px), calc(-50% + " + offsetY.toFixed(1) + "px), 0) scale(" + scale.toFixed(3) + ")";
+            }
+        }
+
+        // Render Foreground Studio Bokeh Particles
+        function renderKineticFX(progress, velocityMag, trauma) {
+            const fxCanvas = document.getElementById("fxCanvas");
+            if (!fxCanvas) return;
+            const ctx = fxCanvas.getContext("2d");
+            const w = fxCanvas.width;
+            const h = fxCanvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            const cx = w * 0.5;
+            const cy = h * 0.52;
+
+            ctx.save();
+            studioParticles.forEach((p, idx) => {
+                let zDepth = (p.z + progress * 3.0) % 1;
+                if (zDepth < 0) zDepth += 1;
+                const perspectiveScale = 0.25 + Math.pow(zDepth, 2.1) * 2.4;
+                const px = cx + (p.x - 0.5) * w * perspectiveScale;
+                const py = cy + (p.y - 0.5) * h * perspectiveScale;
+                const alpha = Math.sin(zDepth * Math.PI) * (0.16 + Math.min(0.32, velocityMag * 8));
+
+                ctx.fillStyle = idx % 2 === 0 ? "rgba(56, 189, 248, " + alpha.toFixed(3) + ")" : "rgba(37, 99, 235, " + alpha.toFixed(3) + ")";
+                ctx.beginPath();
+                ctx.arc(px, py, p.size * perspectiveScale, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.restore();
+        }
+
+        function triggerArrivalBeat(stageIndex, titleText) {
+            const mult = shakeMode === 2 ? 1.85 : (shakeMode === 1 ? 1.0 : 0);
+            impactTrauma = Math.min(1.0, impactTrauma + 0.55 * mult);
+
+            const banner = document.getElementById("impact-beat-banner");
+            const textEl = document.getElementById("impact-beat-text");
+            if (banner && textEl) {
+                textEl.textContent = titleText;
+            }
+        }
+
+        // Initialize Interactive Scroll Studio Stage
+        function initScrollStudio() {
+            const stage = document.getElementById("scrollStudioSection");
+            const envCanvas = document.getElementById("studioEnvCanvas");
+            const fxCanvas = document.getElementById("fxCanvas");
+            const photoStage = document.getElementById("photo-studio-stage");
+            const video = document.getElementById("scrollVideo");
+            const frame3d = document.getElementById("studio-3d-frame");
+            const manualInput = document.getElementById("manual-video-input");
+            const pillLabel = document.getElementById("video-pill-label");
+
+            if (!stage || !envCanvas) return;
+
+            function resizeCanvases() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                envCanvas.width = window.innerWidth * dpr;
+                envCanvas.height = window.innerHeight * dpr;
+                if (fxCanvas) {
+                    fxCanvas.width = window.innerWidth * dpr;
+                    fxCanvas.height = window.innerHeight * dpr;
+                }
+                if (!nativeVideoReady) {
+                    renderStudioEnvironment(smoothProgress, getCameraPose(smoothProgress));
+                }
+            }
+
+            resizeCanvases();
+            window.addEventListener("resize", resizeCanvases);
+
+            function enableNativeVideo() {
+                if (video && video.readyState >= 1) {
+                    if (video.duration && !isNaN(video.duration) && isFinite(video.duration)) {
+                        videoDuration = video.duration;
+                    }
+                    nativeVideoReady = true;
+                    video.classList.remove("hidden");
+                    if (photoStage) photoStage.classList.add("hidden");
+                    envCanvas.classList.add("hidden");
+                    video.pause();
+                    if (pillLabel) pillLabel.textContent = "Studio MP4 Active";
+                }
+            }
+
+            if (video) {
+                video.addEventListener("loadedmetadata", enableNativeVideo);
+                video.addEventListener("canplay", enableNativeVideo);
+            }
+
+            if (manualInput && video) {
+                manualInput.addEventListener("change", (e) => {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file) return;
+                    const blobUrl = URL.createObjectURL(file);
+                    nativeVideoReady = false;
+                    video.src = blobUrl;
+                    video.load();
+                });
+            }
+
+            window.addEventListener("mousemove", (e) => {
+                const nx = (e.clientX / window.innerWidth) - 0.5;
+                const ny = (e.clientY / window.innerHeight) - 0.5;
+                mouseTiltY = nx * 3.5;
+                mouseTiltX = -ny * 2.5;
+            });
+
+            document.querySelectorAll(".studio-real-car").forEach(card => {
+                card.addEventListener("click", () => {
+                    const id = parseInt(card.dataset.carId, 10);
+                    if (id) openVehicleModal(id);
+                });
+            });
+
+            document.querySelectorAll(".stage-rail-dot").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const ratio = parseFloat(btn.dataset.scrollTarget || "0");
+                    const rect = stage.getBoundingClientRect();
+                    const stageTop = window.scrollY + rect.top;
+                    const maxScroll = stage.offsetHeight - window.innerHeight;
+                    window.scrollTo({
+                        top: stageTop + maxScroll * ratio,
+                        behavior: "smooth"
+                    });
+                });
+            });
+
+            function updateScrollState() {
+                const rect = stage.getBoundingClientRect();
+                const maxScroll = Math.max(1, stage.offsetHeight - window.innerHeight);
+                const scrolled = Math.min(Math.max(-rect.top, 0), maxScroll);
+                targetProgress = scrolled / maxScroll;
+
+                const progressBar = document.getElementById("scroll-progress-bar");
+                if (progressBar) {
+                    progressBar.style.width = (targetProgress * 100).toFixed(1) + "%";
+                }
+
+                const progEl = document.getElementById("hud-progress");
+                if (progEl) {
+                    progEl.textContent = Math.round(targetProgress * 100) + "%";
+                }
+
+                let stageIdx = 0;
+                if (targetProgress >= 0.72) stageIdx = 3;
+                else if (targetProgress >= 0.49) stageIdx = 2;
+                else if (targetProgress >= 0.23) stageIdx = 1;
+                else stageIdx = 0;
+
+                if (stageIdx !== lastBeatIndex && lastBeatIndex !== -1) {
+                    const beatTitles = [
+                        "STAGE 01 • FORD RANGER WILDTRAK ARRIVAL",
+                        "STAGE 02 • VW POLO GTI & ECOSPORT LOCK",
+                        "STAGE 03 • TOYOTA HILUX 4X4 TOUCHDOWN",
+                        "STAGE 04 • PREMIUM SELECTION FORMATION LOCKED"
+                    ];
+                    triggerArrivalBeat(stageIdx, beatTitles[stageIdx]);
+                }
+                lastBeatIndex = stageIdx;
+
+                for (let i = 0; i < 4; i++) {
+                    const card = document.getElementById("hud-stage-" + i);
+                    if (card) card.classList.toggle("active", i === stageIdx);
+                }
+
+                document.querySelectorAll(".stage-rail-dot").forEach((dot, idx) => {
+                    if (idx === stageIdx) {
+                        dot.className = "stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-sky-400 bg-blue-600/25 border border-sky-400/30 transition";
+                    } else {
+                        dot.className = "stage-rail-dot px-2 py-0.5 rounded-full text-[10px] font-extrabold text-slate-400 hover:text-white transition";
+                    }
+                });
+
+                const cue = document.getElementById("scroll-cue");
+                if (cue) cue.style.opacity = targetProgress > 0.06 ? "0" : "1";
+            }
+
+            window.addEventListener("scroll", updateScrollState, { passive: true });
+            updateScrollState();
+
+            function tick() {
+                shakeTime += 0.045;
+                smoothProgress += (targetProgress - smoothProgress) * 0.12;
+
+                scrollVelocity = Math.abs(targetProgress - smoothProgress);
+                smoothVelocity += (scrollVelocity - smoothVelocity) * 0.18;
+                impactTrauma = Math.max(0, impactTrauma * 0.91 - 0.002);
+
+                const camPose = getCameraPose(smoothProgress);
+
+                if (nativeVideoReady && video && !video.seeking) {
+                    const desiredTime = smoothProgress * videoDuration;
+                    if (Math.abs(video.currentTime - desiredTime) > 0.02) {
+                        try {
+                            video.currentTime = Math.max(0, Math.min(videoDuration - 0.02, desiredTime));
+                        } catch (e) {}
+                    }
+                } else {
+                    renderStudioEnvironment(smoothProgress, camPose);
+                    updateRealCarsChoreography(smoothProgress, camPose);
+                }
+
+                // Velocity + Impact Camera Shake (shakeMode defaults to 0 = OFF for smooth stabilized camera movement)
+                const shakeMultiplier = shakeMode === 2 ? 1.85 : (shakeMode === 1 ? 1.0 : 0);
+                const totalShakeEnergy = Math.min(1.2, (smoothVelocity * 16 + impactTrauma * 0.85)) * shakeMultiplier;
+
+                const shakeX = (Math.sin(shakeTime * 17.3) * 0.6 + Math.cos(shakeTime * 29.1) * 0.4) * totalShakeEnergy * 22;
+                const shakeY = (Math.cos(shakeTime * 19.7) * 0.6 + Math.sin(shakeTime * 33.5) * 0.4) * totalShakeEnergy * 16;
+                const shakeRoll = (Math.sin(shakeTime * 23.4) * 0.7 + Math.cos(shakeTime * 13.8) * 0.3) * totalShakeEnergy * 2.2;
+
+                if (frame3d) {
+                    const finalRotX = camPose.orbitPitch + mouseTiltX + (shakeY * 0.07);
+                    const finalRotY = camPose.orbitYaw + mouseTiltY + (shakeX * 0.07);
+                    const finalRotZ = camPose.dutchRoll + shakeRoll;
+                    const finalScale = camPose.dollyScale + totalShakeEnergy * 0.03;
+                    const finalTx = camPose.truckX + shakeX;
+                    const finalTy = camPose.pedestalY + shakeY;
+
+                    frame3d.style.transform =
+                        "translate3d(" + finalTx.toFixed(1) + "px, " + finalTy.toFixed(1) + "px, 0px) " +
+                        "rotateX(" + finalRotX.toFixed(2) + "deg) " +
+                        "rotateY(" + finalRotY.toFixed(2) + "deg) " +
+                        "rotateZ(" + finalRotZ.toFixed(2) + "deg) " +
+                        "scale(" + finalScale.toFixed(3) + ")";
+                }
+
+                renderKineticFX(smoothProgress, smoothVelocity, impactTrauma * shakeMultiplier);
+
+                const velEl = document.getElementById("hud-velocity");
+                const focalEl = document.getElementById("hud-focal");
+                const gforceEl = document.getElementById("hud-gforce");
+
+                if (velEl) {
+                    const kmh = Math.min(240, Math.round(smoothVelocity * 1850 + impactTrauma * 45));
+                    velEl.textContent = kmh + " km/h";
+                }
+                if (focalEl) {
+                    focalEl.textContent = camPose.focalMm + "mm";
+                }
+                if (gforceEl) {
+                    const gVal = (1.0 + totalShakeEnergy * 1.45).toFixed(2);
+                    gforceEl.textContent = gVal + "G";
+                }
+
+                requestAnimationFrame(tick);
+            }
+
+            requestAnimationFrame(tick);
+        }
+
+        // Gliding Category Filter Pill
+        function moveCategoryPill(targetBtn) {
+            const pill = document.getElementById("category-slider-pill");
+            const container = document.getElementById("category-filters");
+            if (!pill || !container || !targetBtn) return;
+
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = targetBtn.getBoundingClientRect();
+            pill.style.width = btnRect.width + "px";
+            pill.style.height = btnRect.height + "px";
+            pill.style.transform = "translate3d(" + (btnRect.left - containerRect.left + container.scrollLeft) + "px, " + (btnRect.top - containerRect.top) + "px, 0)";
+        }
+
+        function setActiveCategoryButton(catValue) {
+            const buttons = document.querySelectorAll(".filter-btn");
+            let activeBtn = null;
+            buttons.forEach(btn => {
+                if (btn.dataset.cat === catValue) {
+                    btn.classList.add("active", "text-white");
+                    btn.classList.remove("text-slate-400");
+                    activeBtn = btn;
+                } else {
+                    btn.classList.remove("active", "text-white");
+                    btn.classList.add("text-slate-400");
+                }
+            });
+            if (activeBtn) {
+                requestAnimationFrame(() => moveCategoryPill(activeBtn));
+            }
+        }
+
+        // Render Showroom Inventory Cards
+        function renderInventory() {
+            const grid = document.getElementById("vehicle-grid");
+            const noResults = document.getElementById("no-results");
+            const countLabel = document.getElementById("results-count");
+            if (!grid) return;
+
+            const filtered = vehicles.filter(v => {
+                const matchesCategory = activeCategory === "all" || v.category === activeCategory;
+                const matchesMake = activeMake === "all" || v.make === activeMake;
+                const matchesPrice = v.price <= maxPriceFilter;
+                const q = searchQuery.toLowerCase().trim();
+                const matchesSearch = !q ||
+                    v.make.toLowerCase().includes(q) ||
+                    v.model.toLowerCase().includes(q) ||
+                    String(v.year).includes(q) ||
+                    v.category.toLowerCase().includes(q);
+                return matchesCategory && matchesMake && matchesPrice && matchesSearch;
+            });
+
+            if (sortOption === "price-asc") filtered.sort((a, b) => a.price - b.price);
+            if (sortOption === "price-desc") filtered.sort((a, b) => b.price - a.price);
+            if (sortOption === "year-desc") filtered.sort((a, b) => b.year - a.year);
+            if (sortOption === "mileage-asc") filtered.sort((a, b) => a.mileage - b.mileage);
+
+            countLabel.textContent = "Showing " + filtered.length + " of " + vehicles.length + " vehicles";
+            grid.innerHTML = "";
+
+            if (filtered.length === 0) {
+                noResults.classList.remove("hidden");
+                return;
+            }
+            noResults.classList.add("hidden");
+
+            filtered.forEach(car => {
+                const card = el("article", "group bg-navy-900 rounded-2xl border border-slate-800 hover:border-sky-500/50 overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between");
+                const topPart = el("div");
+
+                const imgBox = el("div", "relative h-48 sm:h-52 bg-navy-950 overflow-hidden cursor-pointer");
+                imgBox.addEventListener("click", () => openVehicleModal(car.id));
+
+                const img = el("img", "w-full h-full object-cover group-hover:scale-105 transition-transform duration-500");
+                img.src = car.image;
+                img.alt = car.year + " " + car.make + " " + car.model;
+                img.addEventListener("error", function () {
+                    this.src = "https://placehold.co/600x400/0B1120/38BDF8?text=" + encodeURIComponent(car.make + " " + car.model);
+                });
+                imgBox.appendChild(img);
+
+                const badges = el("div", "absolute top-3 left-3 flex gap-1.5");
+                badges.appendChild(el("span", "px-2.5 py-1 rounded-lg bg-navy-950/90 text-sky-400 border border-white/10 text-[11px] font-bold", String(car.year)));
+                badges.appendChild(el("span", "px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-bold", car.badge));
+                imgBox.appendChild(badges);
+
+                const bottomOverlay = el("div", "absolute bottom-0 inset-x-0 bg-gradient-to-t from-navy-950/95 via-navy-950/40 to-transparent p-3 flex justify-between items-end");
+                bottomOverlay.appendChild(el("span", "text-[11px] font-medium text-slate-200", formatKm(car.mileage)));
+                bottomOverlay.appendChild(el("span", "text-[11px] font-semibold text-sky-300 bg-navy-950/85 border border-sky-400/20 px-2 py-0.5 rounded-md", "Est. " + formatZAR(estimateMonthly(car.price)) + "/pm"));
+                imgBox.appendChild(bottomOverlay);
+                topPart.appendChild(imgBox);
+
+                const body = el("div", "p-4 sm:p-5");
+                body.appendChild(el("div", "text-[11px] font-bold uppercase tracking-wider text-sky-400 mb-1", car.make));
+
+                const title = el("h3", "font-display font-bold text-base text-white leading-snug mb-2 group-hover:text-sky-400 transition cursor-pointer", car.model);
+                title.addEventListener("click", () => openVehicleModal(car.id));
+                body.appendChild(title);
+
+                body.appendChild(el("div", "font-display font-extrabold text-xl text-emerald-400 mb-4", formatZAR(car.price)));
+
+                const specsGrid = el("div", "grid grid-cols-3 gap-2 pt-3 border-t border-slate-800 text-[11px] text-slate-400");
+                const s1 = el("div", "flex items-center gap-1.5");
+                s1.appendChild(el("i", "fa-solid fa-gears text-sky-400/80"));
+                s1.appendChild(el("span", "truncate", car.transmission));
+
+                const s2 = el("div", "flex items-center gap-1.5");
+                s2.appendChild(el("i", "fa-solid fa-gas-pump text-sky-400/80"));
+                s2.appendChild(el("span", "truncate", car.fuel));
+
+                const s3 = el("div", "flex items-center gap-1.5");
+                s3.appendChild(el("i", "fa-solid fa-palette text-sky-400/80"));
+                s3.appendChild(el("span", "truncate", car.color.split(" ")[0]));
+
+                specsGrid.appendChild(s1);
+                specsGrid.appendChild(s2);
+                specsGrid.appendChild(s3);
+                body.appendChild(specsGrid);
+
+                topPart.appendChild(body);
+                card.appendChild(topPart);
+
+                const actions = el("div", "px-4 sm:px-5 pb-4 sm:pb-5 pt-1 grid grid-cols-2 gap-2.5");
+                const viewBtn = el("button", "py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs transition", "View Specs");
+                viewBtn.type = "button";
+                viewBtn.addEventListener("click", () => openVehicleModal(car.id));
+
+                const waBtn = el("a", "py-2.5 px-3 rounded-xl bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5");
+                waBtn.href = getVehicleWhatsAppUrl(car);
+                waBtn.target = "_blank";
+                waBtn.rel = "noopener noreferrer";
+                waBtn.appendChild(el("i", "fa-brands fa-whatsapp text-sm"));
+                waBtn.appendChild(el("span", null, "Enquire"));
+
+                actions.appendChild(viewBtn);
+                actions.appendChild(waBtn);
+                card.appendChild(actions);
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Open Vehicle Specifications Modal
+        function openVehicleModal(carId) {
+            const car = vehicles.find(v => v.id === carId);
+            if (!car) return;
+
+            const modal = document.getElementById("vehicle-modal");
+            const content = document.getElementById("modal-content");
+            content.innerHTML = "";
+
+            const leftCol = el("div", "lg:col-span-6 bg-navy-950 relative min-h-[220px] sm:min-h-[260px] lg:min-h-full");
+            const img = el("img", "w-full h-full object-cover");
+            img.src = car.image;
+            img.alt = car.year + " " + car.make + " " + car.model;
+            img.addEventListener("error", function () {
+                this.src = "https://placehold.co/800x600/0B1120/38BDF8?text=" + encodeURIComponent(car.make + " " + car.model);
+            });
+            leftCol.appendChild(img);
+
+            const badgeWrap = el("div", "absolute top-4 left-4 flex gap-2");
+            badgeWrap.appendChild(el("span", "px-3 py-1 rounded-lg bg-navy-900/90 text-sky-400 border border-white/15 text-xs font-bold", String(car.year)));
+            badgeWrap.appendChild(el("span", "px-3 py-1 rounded-lg bg-blue-600 text-white text-xs font-bold", car.badge));
+            leftCol.appendChild(badgeWrap);
+
+            const rightCol = el("div", "lg:col-span-6 p-5 sm:p-8 flex flex-col justify-between bg-navy-900");
+            const infoTop = el("div");
+
+            infoTop.appendChild(el("span", "text-xs font-bold uppercase tracking-widest text-sky-400", car.make + " • " + car.category));
+            infoTop.appendChild(el("h3", "font-display font-extrabold text-xl sm:text-2xl text-white mt-1", car.model));
+
+            const priceRow = el("div", "flex items-baseline gap-3 mt-2.5 mb-4");
+            priceRow.appendChild(el("span", "font-display font-extrabold text-2xl sm:text-3xl text-emerald-400", formatZAR(car.price)));
+            priceRow.appendChild(el("span", "text-xs font-semibold text-slate-400", "Est. " + formatZAR(estimateMonthly(car.price)) + " p/m"));
+            infoTop.appendChild(priceRow);
+
+            infoTop.appendChild(el("p", "text-xs text-slate-300 leading-relaxed mb-5", car.description));
+
+            const specGrid = el("div", "grid grid-cols-2 gap-3 bg-navy-950 p-3.5 rounded-2xl border border-slate-800 text-xs mb-5");
+            [
+                { label: "Mileage", val: formatKm(car.mileage) },
+                { label: "Transmission", val: car.transmission },
+                { label: "Fuel Type", val: car.fuel },
+                { label: "Exterior Colour", val: car.color }
+            ].forEach(item => {
+                const box = el("div");
+                box.appendChild(el("span", "text-slate-400 block", item.label));
+                box.appendChild(el("span", "font-bold text-white", item.val));
+                specGrid.appendChild(box);
+            });
+            infoTop.appendChild(specGrid);
+
+            const highlightsWrap = el("div", "mb-6");
+            highlightsWrap.appendChild(el("h4", "text-xs font-bold uppercase tracking-wider text-slate-400 mb-2", "Key Highlights"));
+            const ul = el("ul", "grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-slate-200");
+            car.features.forEach(f => {
+                const li = el("li", "flex items-center gap-2");
+                li.appendChild(el("i", "fa-solid fa-check text-emerald-400"));
+                li.appendChild(el("span", null, f));
+                ul.appendChild(li);
+            });
+            highlightsWrap.appendChild(ul);
+            infoTop.appendChild(highlightsWrap);
+            rightCol.appendChild(infoTop);
+
+            const ctaWrap = el("div", "space-y-2.5 pt-3 border-t border-slate-800");
+            const waModalBtn = el("a", "w-full py-3.5 px-5 rounded-xl bg-whatsapp-500 hover:bg-whatsapp-600 text-white font-bold text-xs sm:text-sm shadow-lg transition flex items-center justify-center gap-2");
+            waModalBtn.href = getVehicleWhatsAppUrl(car);
+            waModalBtn.target = "_blank";
+            waModalBtn.rel = "noopener noreferrer";
+            waModalBtn.appendChild(el("i", "fa-brands fa-whatsapp text-lg"));
+            waModalBtn.appendChild(el("span", null, "Enquire About This Car on WhatsApp"));
+            ctaWrap.appendChild(waModalBtn);
+
+            const subBtns = el("div", "grid grid-cols-2 gap-2.5");
+            const calcBtn = el("button", "py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-xs transition", "Calculate Finance");
+            calcBtn.type = "button";
+            calcBtn.addEventListener("click", () => loadCarIntoCalculator(car.price));
+
+            const callBtn = el("a", "py-2.5 px-3 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center gap-1.5");
+            callBtn.href = "tel:0662360624";
+            callBtn.appendChild(el("i", "fa-solid fa-phone text-sky-400"));
+            callBtn.appendChild(el("span", null, "Call 066 236 0624"));
+
+            subBtns.appendChild(calcBtn);
+            subBtns.appendChild(callBtn);
+            ctaWrap.appendChild(subBtns);
+            rightCol.appendChild(ctaWrap);
+
+            content.appendChild(leftCol);
+            content.appendChild(rightCol);
+
+            modal.classList.remove("hidden");
+            requestAnimationFrame(() => modal.classList.add("open"));
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeVehicleModal() {
+            const modal = document.getElementById("vehicle-modal");
+            modal.classList.remove("open");
+            setTimeout(() => modal.classList.add("hidden"), 250);
+            document.body.style.overflow = "";
+        }
+
+        function loadCarIntoCalculator(price) {
+            closeVehicleModal();
+            const priceSlider = document.getElementById("calc-price");
+            priceSlider.value = Math.min(Math.max(price, 120000), 900000);
+            updateFinanceCalculator();
+            document.getElementById("finance").scrollIntoView({ behavior: "smooth" });
+        }
+
+        function applyHeroSearch() {
+            activeMake = document.getElementById("hero-make").value;
+            activeCategory = document.getElementById("hero-category").value;
+            maxPriceFilter = parseInt(document.getElementById("hero-price").value, 10);
+
+            setActiveCategoryButton(activeCategory);
+            renderInventory();
+            document.getElementById("inventory").scrollIntoView({ behavior: "smooth" });
+        }
+
+        function resetFilters() {
+            activeCategory = "all";
+            activeMake = "all";
+            maxPriceFilter = 9999999;
+            searchQuery = "";
+            sortOption = "featured";
+
+            document.getElementById("hero-make").value = "all";
+            document.getElementById("hero-category").value = "all";
+            document.getElementById("hero-price").value = "9999999";
+            document.getElementById("inventory-search").value = "";
+            document.getElementById("inventory-sort").value = "featured";
+
+            setActiveCategoryButton("all");
+            renderInventory();
+        }
+
+        function updateFinanceCalculator() {
+            const price = parseFloat(document.getElementById("calc-price").value);
+            let deposit = parseFloat(document.getElementById("calc-deposit").value);
+            const months = parseInt(document.getElementById("calc-months").value, 10);
+            const rate = parseFloat(document.getElementById("calc-rate").value);
+
+            if (deposit >= price) {
+                deposit = Math.max(0, price - 20000);
+                document.getElementById("calc-deposit").value = deposit;
+            }
+
+            const principal = price - deposit;
+            const depositPercent = Math.round((deposit / price) * 100);
+            const monthlyRate = (rate / 100) / 12;
+            const monthlyPayment = (principal * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -months));
+
+            document.getElementById("calc-price-display").textContent = formatZAR(price);
+            document.getElementById("calc-deposit-display").textContent = formatZAR(deposit) + " (" + depositPercent + "%)";
+            document.getElementById("calc-months-display").textContent = months + " Months";
+            document.getElementById("calc-rate-display").textContent = rate.toFixed(2) + "%";
+
+            document.getElementById("calc-monthly-result").textContent = formatZAR(monthlyPayment) + " /pm";
+            document.getElementById("calc-principal-display").textContent = formatZAR(principal);
+            document.getElementById("calc-summary-display").textContent = months + " months @ " + rate.toFixed(2) + "%";
+
+            const waMessage = "Hello Dicky's Car Sales! I used your finance calculator for a vehicle around " + formatZAR(price) + " with a " + formatZAR(deposit) + " deposit over " + months + " months (est. " + formatZAR(monthlyPayment) + "/pm). Please assist me with finance options.";
+            document.getElementById("calc-whatsapp-btn").href = "https://wa.me/" + DEALER_WHATSAPP + "?text=" + encodeURIComponent(waMessage);
+        }
+
+        function sendTradeInWhatsApp(event) {
+            event.preventDefault();
+            const name = document.getElementById("ti-name").value.trim();
+            const phone = document.getElementById("ti-phone").value.trim();
+            const year = document.getElementById("ti-year").value.trim();
+            const car = document.getElementById("ti-car").value.trim();
+            const km = document.getElementById("ti-km").value.trim();
+            const condition = document.getElementById("ti-condition").value;
+
+            const message = "Hello Dicky's Car Sales! I would like a trade-in / cash valuation:\n• Name: " + name + "\n• Phone: " + phone + "\n• Vehicle: " + year + " " + car + "\n• Mileage: " + Number(km).toLocaleString("en-ZA") + " km\n• Condition: " + condition;
+            window.open("https://wa.me/" + DEALER_WHATSAPP + "?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
+        }
+
+        function toggleWaWidget() {
+            document.getElementById("wa-popup").classList.toggle("open");
+        }
+
+        // Bind All Events Cleanly on DOMContentLoaded
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("current-year").textContent = new Date().getFullYear();
+
+            document.querySelectorAll(".studio-fallback-img").forEach(img => {
+                img.addEventListener("error", function () {
+                    this.src = "https://placehold.co/800x500/0B1120/38BDF8?text=Dicky%27s+Car+Sales+Showroom";
+                });
+            });
+
+            initScrollStudio();
+            renderInventory();
+            updateFinanceCalculator();
+            setActiveCategoryButton("all");
+
+            const shakeBtn = document.getElementById("shake-toggle-btn");
+            if (shakeBtn) shakeBtn.addEventListener("click", cycleShakeMode);
+
+            document.getElementById("hero-search-btn").addEventListener("click", applyHeroSearch);
+            document.getElementById("reset-filters-btn").addEventListener("click", resetFilters);
+            document.getElementById("empty-reset-btn").addEventListener("click", resetFilters);
+            document.getElementById("close-modal-btn").addEventListener("click", closeVehicleModal);
+            document.getElementById("toggle-wa-widget-btn").addEventListener("click", toggleWaWidget);
+            document.getElementById("close-wa-widget-btn").addEventListener("click", toggleWaWidget);
+            document.getElementById("tradein-form").addEventListener("submit", sendTradeInWhatsApp);
+
+            document.querySelectorAll("[data-open-modal]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const id = parseInt(btn.getAttribute("data-open-modal"), 10);
+                    if (id) openVehicleModal(id);
+                });
+            });
+
+            window.addEventListener("resize", () => {
+                const activeBtn = document.querySelector(".filter-btn.active");
+                if (activeBtn) moveCategoryPill(activeBtn);
+            });
+
+            document.querySelectorAll(".filter-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    activeCategory = btn.dataset.cat;
+                    activeMake = "all";
+                    maxPriceFilter = 9999999;
+                    setActiveCategoryButton(activeCategory);
+                    renderInventory();
+                });
+            });
+
+            document.getElementById("inventory-search").addEventListener("input", (e) => {
+                searchQuery = e.target.value;
+                renderInventory();
+            });
+
+            document.getElementById("inventory-sort").addEventListener("change", (e) => {
+                sortOption = e.target.value;
+                renderInventory();
+            });
+
+            ["calc-price", "calc-deposit", "calc-months", "calc-rate"].forEach(id => {
+                document.getElementById(id).addEventListener("input", updateFinanceCalculator);
+            });
+
+            const mobileBtn = document.getElementById("mobile-menu-btn");
+            const mobileMenu = document.getElementById("mobile-menu");
+            const mobileIcon = document.getElementById("mobile-menu-icon");
+            mobileBtn.addEventListener("click", () => {
+                const isOpen = mobileMenu.classList.toggle("open");
+                mobileIcon.classList.toggle("fa-bars", !isOpen);
+                mobileIcon.classList.toggle("fa-xmark", isOpen);
+            });
+
+            document.querySelectorAll(".mobile-nav-link").forEach(link => {
+                link.addEventListener("click", () => {
+                    mobileMenu.classList.remove("open");
+                    mobileIcon.classList.add("fa-bars");
+                    mobileIcon.classList.remove("fa-xmark");
+                });
+            });
+
+            document.getElementById("vehicle-modal").addEventListener("click", (e) => {
+                if (e.target.id === "vehicle-modal") closeVehicleModal();
+            });
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "Escape") closeVehicleModal();
+            });
+        });
+    </script>
+</body>
+</html>
